@@ -1,0 +1,199 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using DG.Tweening;
+
+public class FieldController : MonoBehaviour
+{
+    AudioSource audioSource;
+    public AudioClip renew_field;
+
+
+    //トランプのプレハブ
+    public GameObject fieldcard;
+
+    [SerializeField] PlayerHandController playerHand;
+
+    //Prefabオブジェクトの親オブジェクトへの参照を保持する
+    public Transform ParentObj;
+
+    //カード1枚目の初期位置
+    int posx_start = -240;
+
+
+    
+    //カードデータ
+    public struct CardData
+    {
+        public int number_serial;
+        public int card_number;
+        public string card_mark;
+        public int card_number_under;
+        public int card_number_over;
+        public GameObject card;
+        public Image cardImage;
+
+    }
+
+    public CardData[] fieldcards = new CardData[2];
+
+    // Start is called before the first frame update
+    void Start()
+    {
+            
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+
+    public void ready_game()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
+
+    //ドロー処理
+    public void DrawDeck(int i,int number_serial)
+    {
+        //iは場札の左右の判定。
+        //number_serialは、1～53までの数字。Deck.csから受け取る。
+
+        //i枚目の場札にシリアルナンバーを代入。その後CardParameter関数にて数字とマークを分解。
+            Debug.Log(@$"DrawDeck{i}回目を開始");
+            fieldcards[i].number_serial = number_serial;
+            int posx = posx_start + i * 480;
+            fieldcards[i].card = Instantiate(fieldcard, ParentObj, false);
+            fieldcards[i].card.transform.localPosition = new Vector3(posx, 0, -1);
+
+        CardImageUpdate(i, number_serial);
+        CardParameter(i, number_serial);
+
+    }
+
+    public void CardParameter(int fieldcard_number,int number_serial)
+    {
+        //受け取ったシリアルナンバーを数字とマークに分解。
+        if (number_serial >= 1 && number_serial <= 13)
+        {
+            fieldcards[fieldcard_number].card_number = number_serial;
+            fieldcards[fieldcard_number].card_mark = "C";
+        }
+        else if (number_serial >= 14 && number_serial <= 26)
+        {
+            fieldcards[fieldcard_number].card_number = number_serial - 13;
+            fieldcards[fieldcard_number].card_mark = "D";
+        }
+        else if (number_serial >= 27 && number_serial <= 39)
+        {
+            fieldcards[fieldcard_number].card_number = number_serial - 26;
+            fieldcards[fieldcard_number].card_mark = "S";
+        }
+        else if (number_serial >= 40 && number_serial <= 52)
+        {
+            fieldcards[fieldcard_number].card_number = number_serial - 39;
+            fieldcards[fieldcard_number].card_mark = "H";
+        }
+        else if (number_serial == 53)
+        {
+            fieldcards[fieldcard_number].card_number = 0;
+            fieldcards[fieldcard_number].card_mark = "J";
+        }
+        else
+        {
+            Debug.Log(@$"ナンバーエラー:{number_serial}");
+        }
+
+        //入れ替える時の数字を決定
+        if (fieldcards[fieldcard_number].card_number >= 2 && fieldcards[fieldcard_number].card_number <= 12)
+        {
+            fieldcards[fieldcard_number].card_number_under = fieldcards[fieldcard_number].card_number -1;
+            fieldcards[fieldcard_number].card_number_over = fieldcards[fieldcard_number].card_number + 1;
+        }else if (fieldcards[fieldcard_number].card_number == 1)
+        {
+            fieldcards[fieldcard_number].card_number_under = 13;
+            fieldcards[fieldcard_number].card_number_over = 2;
+        }
+        else if (fieldcards[fieldcard_number].card_number == 13)
+        {
+            fieldcards[fieldcard_number].card_number_under = 12;
+            fieldcards[fieldcard_number].card_number_over = 1;
+        }
+
+        Debug.Log(@$"{fieldcard_number}回目：数字:{fieldcards[fieldcard_number].card_number}、マーク：{fieldcards[fieldcard_number].card_mark}");
+    }
+
+    public void CardImageUpdate(int fieldcard_number, int number_serial)
+    {
+        //ガードの画像を更新する関数
+        fieldcards[fieldcard_number].cardImage = fieldcards[fieldcard_number].card.GetComponent<Image>();
+        fieldcards[fieldcard_number].cardImage.sprite = Resources.Load<Sprite>("CardImages/" + number_serial.ToString());
+    }
+
+    //手札のカードと入れ替える関数
+    public int judge_putcard_center(int hand_card_number,string hand_card_mark,int hand_number_serial, GameObject hand_card)
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            if (hand_card_number == fieldcards[i].card_number_under || hand_card_number == fieldcards[i].card_number_over)
+            {
+                StartCoroutine(animate_putcard_center(i,hand_card));
+                fieldcards[i].number_serial = hand_number_serial;
+                CardImageUpdate(i, fieldcards[i].number_serial);
+                CardParameter(i, fieldcards[i].number_serial);
+                
+                return 1;
+                break;
+            }
+        }
+        Debug.Log(@$"お手付きです。");
+        return 0;
+    }
+
+    public int check_hand_action(int hand_card_number, string hand_card_mark)
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            if (hand_card_number == fieldcards[i].card_number_under || hand_card_number == fieldcards[i].card_number_over)
+            {
+                return 1;
+                break;
+            }
+        }
+        return 0;
+    }
+
+    public IEnumerator renew_filed_card()
+    {
+        Debug.Log(@$"fieldController.cs renew_field_card 処理開始");
+        play_se(renew_field);
+        for (int i = 0; i < 2; i++)
+        {
+            {
+                var renew_number_serial = Random.Range(1, 52);
+                CardImageUpdate(i, renew_number_serial);
+                CardParameter(i, renew_number_serial);
+            }
+        }
+        yield return null;
+
+    }
+
+    public IEnumerator animate_putcard_center(int center_number, GameObject hand_card)
+    {
+        int posx = posx_start + center_number * 480;
+        hand_card.transform.SetParent(ParentObj);
+        hand_card.transform.DOLocalMove(new Vector3(posx, 0, 0), 0.1f);
+        yield return new WaitForSeconds(0.2f);
+        Destroy(hand_card);
+    }
+
+    public void play_se(AudioClip audio_name)
+    {
+        audioSource.clip = audio_name;
+        audioSource.Play();
+    }
+
+}
