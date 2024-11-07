@@ -19,10 +19,10 @@ public class FieldController : MonoBehaviour
     public Transform ParentObj;
 
     //カード1枚目の初期位置
-    int posx_start = -240;
+    int posx_start = -190;
 
+    private const int SPACE_OF_CARD = 380;
 
-    
     //カードデータ
     public struct CardData
     {
@@ -56,20 +56,16 @@ public class FieldController : MonoBehaviour
     }
 
     //ドロー処理
-    public void DrawDeck(int i,int number_serial)
+    public void draw_deck(int fieldcard_number,int number_serial)
     {
-        //iは場札の左右の判定。
-        //number_serialは、1～53までの数字。Deck.csから受け取る。
+        //number_serialは、1～52までの数字。Deck.csから受け取る。
+        fieldcards[fieldcard_number].number_serial = number_serial;
+        int posx = posx_start + fieldcard_number * SPACE_OF_CARD;
+        fieldcards[fieldcard_number].card = Instantiate(fieldcard, ParentObj, false);
+        fieldcards[fieldcard_number].card.transform.localPosition = new Vector3(posx, 0, -1);
 
-        //i枚目の場札にシリアルナンバーを代入。その後CardParameter関数にて数字とマークを分解。
-            Debug.Log(@$"DrawDeck{i}回目を開始");
-            fieldcards[i].number_serial = number_serial;
-            int posx = posx_start + i * 480;
-            fieldcards[i].card = Instantiate(fieldcard, ParentObj, false);
-            fieldcards[i].card.transform.localPosition = new Vector3(posx, 0, -1);
-
-        CardImageUpdate(i, number_serial);
-        CardParameter(i, number_serial);
+        CardImageUpdate(fieldcard_number, number_serial);
+        CardParameter(fieldcard_number, number_serial);
 
     }
 
@@ -127,7 +123,7 @@ public class FieldController : MonoBehaviour
 
     public void CardImageUpdate(int fieldcard_number, int number_serial)
     {
-        //ガードの画像を更新する関数
+        //カードの画像を更新する関数
         fieldcards[fieldcard_number].cardImage = fieldcards[fieldcard_number].card.GetComponent<Image>();
         fieldcards[fieldcard_number].cardImage.sprite = Resources.Load<Sprite>("CardImages/" + number_serial.ToString());
     }
@@ -183,7 +179,7 @@ public class FieldController : MonoBehaviour
 
     public IEnumerator animate_putcard_center(int center_number, GameObject hand_card)
     {
-        int posx = posx_start + center_number * 480;
+        int posx = posx_start + center_number * SPACE_OF_CARD;
         hand_card.transform.SetParent(ParentObj);
         hand_card.transform.DOLocalMove(new Vector3(posx, 0, 0), 0.1f);
         yield return new WaitForSeconds(0.2f);

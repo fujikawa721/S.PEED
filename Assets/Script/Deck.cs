@@ -11,6 +11,7 @@ public class Deck : MonoBehaviour
     [SerializeField] TextMeshProUGUI decks_zan_Text;
 
     private const int NUMBER_OF_DECK = 52;
+    private const int NUMBER_OF_HAND = 5;
 
     private int[] decks = new int[NUMBER_OF_DECK];
     private int decks_zan = NUMBER_OF_DECK;
@@ -65,7 +66,7 @@ public class Deck : MonoBehaviour
 
     IEnumerator PlayerHandMake()
     {
-        for (var i = 0; i < 4; i++)
+        for (var i = 0; i < NUMBER_OF_HAND; i++)
         {
             Debug.Log(@$"ŽèŽD¶¬ˆ—‚ðŠJŽn");
             decks_zan--;
@@ -75,16 +76,13 @@ public class Deck : MonoBehaviour
         yield return new WaitForSeconds(2.0f);//ŽèŽD¶¬ˆ—Œã‚ÌŽžŠÔ
     }
 
-    public IEnumerator make_field()
+    public IEnumerator make_field(int fieldcard_number)
     {
         //êŽD‚Ì‚Q–‡‚ð“ü‚ê‘Ö‚¦‚éƒƒ\ƒbƒh
         Debug.Log(@$"êŽD¶¬ˆ—‚ðŠJŽn");
-        for (var i = 0; i < 2; i++)
-        {
             decks_zan--;
-            Field.DrawDeck(i,decks[decks_zan]);
+            Field.draw_deck(fieldcard_number,decks[decks_zan]);
             yield return new WaitForSeconds(0.2f);//êŽD¶¬‘¬“x
-        }
     }
 
 

@@ -11,6 +11,7 @@ public class PlayerHandController : MonoBehaviour
 
     [SerializeField] Deck deckscript;
     [SerializeField] FieldController fieldscript;
+    [SerializeField] Player player_script;
 
     //トランプのプレハブ
     public GameObject playercard;//ノーマル保留
@@ -21,8 +22,9 @@ public class PlayerHandController : MonoBehaviour
     public Transform ParentObj;
 
     //カード1枚目の初期位置
-    int field_start_posx = -570;
-    private const int NUMBER_OF_HAND = 4;
+    int field_start_posx = -620;
+    private const int NUMBER_OF_HAND = 5;
+    private const int SPACE_OF_CARD = 310;
 
 
     //カードデータ
@@ -85,7 +87,7 @@ public class PlayerHandController : MonoBehaviour
 
     void check_draw_position(int playerhand_number)
     {
-        int posx = field_start_posx + playerhand_number * 380;
+        int posx = field_start_posx + playerhand_number * SPACE_OF_CARD;
         playerhands[playerhand_number].card_obj = Instantiate(playercard, ParentObj, false);
         playerhands[playerhand_number].card_obj.transform.localPosition = new Vector3(posx, 0, -1);
         Debug.Log(@$"PlayerHandController.cs check_draw_position {posx}カード生成位置の設定");
@@ -150,6 +152,7 @@ public class PlayerHandController : MonoBehaviour
         int correct_judge = fieldscript.judge_putcard_center(playerhands[hand_number].card_number, playerhands[hand_number].card_mark, playerhands[hand_number].number_serial, playerhands[hand_number].card_obj);
         if (correct_judge == 1)
         {
+            player_script.attack_enemy();
             Debug.Log(@$"場に出しました correct_judgeは{correct_judge},{hand_number}枚目にドローします。");
             playerhands[hand_number].number_serial = 0;
             StartCoroutine(deckscript.Draw_One());
@@ -181,6 +184,7 @@ public class PlayerHandController : MonoBehaviour
         return 1; 
     }
 
+    //エネミーUIが実行する。
     public void put_handcard_center()
     {
         for (int i = 0; i < NUMBER_OF_HAND; i++)
@@ -188,6 +192,7 @@ public class PlayerHandController : MonoBehaviour
             int correct_judge = fieldscript.check_hand_action(playerhands[i].card_number, playerhands[i].card_mark);
             if (correct_judge == 1)
             {
+                player_script.attack_enemy();
                 fieldscript.judge_putcard_center(playerhands[i].card_number, playerhands[i].card_mark, playerhands[i].number_serial, playerhands[i].card_obj);
                 playerhands[i].number_serial = 0;
                 StartCoroutine(deckscript.Draw_One());
