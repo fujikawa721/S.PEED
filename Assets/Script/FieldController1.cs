@@ -7,7 +7,7 @@ using DG.Tweening;
 public class FieldController : MonoBehaviour
 {
     AudioSource audioSource;
-    public AudioClip renew_field;
+    public AudioClip speed;
 
 
     //トランプのプレハブ
@@ -50,9 +50,10 @@ public class FieldController : MonoBehaviour
         
     }
 
-    public void ready_game()
+    public IEnumerator ready_game()
     {
         audioSource = GetComponent<AudioSource>();
+        yield return null;
     }
 
     //ドロー処理
@@ -161,10 +162,11 @@ public class FieldController : MonoBehaviour
         return 0;
     }
 
+    //仕切り直しの時に山札からじゃなくてランダム生成する処理（未使用）
     public IEnumerator renew_filed_card()
     {
         Debug.Log(@$"fieldController.cs renew_field_card 処理開始");
-        play_se(renew_field);
+        play_se_speed();
         for (int i = 0; i < 2; i++)
         {
             {
@@ -186,9 +188,9 @@ public class FieldController : MonoBehaviour
         Destroy(hand_card);
     }
 
-    public void play_se(AudioClip audio_name)
+    public void play_se_speed()
     {
-        audioSource.clip = audio_name;
+        audioSource.clip = speed;
         audioSource.Play();
     }
 

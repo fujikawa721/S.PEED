@@ -10,8 +10,14 @@ public class Deck : MonoBehaviour
     [SerializeField] FieldController Field;
     [SerializeField] TextMeshProUGUI decks_zan_Text;
 
-    private const int NUMBER_OF_DECK = 52;
+    AudioSource audioSource;
+    public AudioClip deck_max;
+
+
+    private const int NUMBER_OF_DECK = 26;
     private const int NUMBER_OF_HAND = 5;
+    private const float SPEED_DRAWHAND = 0.1f;
+    private const float SPEED_DRAWFIELD = 0.2f;
 
     private int[] decks = new int[NUMBER_OF_DECK];
     private int decks_zan = NUMBER_OF_DECK;
@@ -36,21 +42,22 @@ public class Deck : MonoBehaviour
 
     public IEnumerator make_playerdeck()
     {
-        Debug.Log(decks.Length);
-        DeckMake();
-        Shuffle();
-        yield return StartCoroutine(PlayerHandMake());
+        play_se_deck_max();
+        decks_zan = NUMBER_OF_DECK;
+        make_deck_serial_number();
+        shuffle_deck();
+        yield return null;
     }
 
 
-    void DeckMake()
+    void make_deck_serial_number()
     {
         for (int i = 0; i < NUMBER_OF_DECK; i++) {
             decks[i] = i+1;
         }
     }
 
-    void Shuffle()
+    void shuffle_deck()
     {
         Debug.Log(@$"デッキ枚数は{decks_zan}、シャッフル処理を開始");
         for (var i = decks_zan-1; i >= 0; i--)
@@ -58,41 +65,68 @@ public class Deck : MonoBehaviour
             var j = Random.Range(0, NUMBER_OF_DECK);
             var tmp = decks[i];
             decks[i] = decks[j];
-            decks[j] = tmp;
-            
+            decks[j] = tmp;           
         }
 
     }
 
-    IEnumerator PlayerHandMake()
+    //ゲーム開始時の手札生成処理
+    public IEnumerator make_playerhand()
     {
         for (var i = 0; i < NUMBER_OF_HAND; i++)
         {
             Debug.Log(@$"手札生成処理を開始");
             decks_zan--;
             playerHand.DrawHand(decks[decks_zan]);
-            yield return new WaitForSeconds(0.1f);//手札生成速度
+            yield return new WaitForSeconds(SPEED_DRAWHAND);
         }
         yield return new WaitForSeconds(2.0f);//手札生成処理後の時間
     }
 
     public IEnumerator make_field(int fieldcard_number)
     {
-        //場札の２枚を入れ替えるメソッド
-        Debug.Log(@$"場札生成処理を開始");
+        if (decks_zan > 0)
+        {
+            Debug.Log(@$"場札生成処理を開始");
             decks_zan--;
-            Field.draw_deck(fieldcard_number,decks[decks_zan]);
-            yield return new WaitForSeconds(0.2f);//場札生成速度
+            Field.draw_deck(fieldcard_number, decks[decks_zan]);
+            yield return new WaitForSeconds(SPEED_DRAWFIELD);
+        }
+        else
+        {
+            Field.draw_deck(fieldcard_number, 0);
+            yield return new WaitForSeconds(SPEED_DRAWFIELD);
+        }
     }
 
 
     public IEnumerator Draw_One()
-    {        
-            Debug.Log(@$"ドロー処理を開始");
-            decks_zan--;
-            playerHand.DrawHand(decks[decks_zan]);
-            yield return new WaitForSeconds(0.1f);//手札生成速度
+    {
+        if (decks_zan < 1)
+        {
+            
+            yield return StartCoroutine(make_playerdeck());
+        }
 
+        Debug.Log(@$"ドロー処理を開始");
+        decks_zan--;
+        playerHand.DrawHand(decks[decks_zan]);
+        yield return new WaitForSeconds(SPEED_DRAWHAND);
+    
     }
+
+    //★★効果音★★
+    public IEnumerator ready_game()
+    {
+        audioSource = GetComponent<AudioSource>();
+        yield return null;
+    }
+
+    public void play_se_deck_max()
+    {
+        audioSource.clip = deck_max;
+        audioSource.Play();
+    }
+
 
 }

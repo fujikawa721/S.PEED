@@ -49,21 +49,35 @@ public class GameController : MonoBehaviour
 
     public IEnumerator start_game()
     {
-        playerHandController.ready_game();
-        enemyHandController.ready_game();
-        fieldController.ready_game();
+        yield return StartCoroutine(fieldController.ready_game());
+        yield return StartCoroutine(deckScript.ready_game());
+        yield return StartCoroutine(enemy_deckScript.ready_game());
 
-        playerHandController.clear_hand();
-        enemyHandController.clear_hand();
-        StartCoroutine(deckScript.make_playerdeck());
-        StartCoroutine(enemy_deckScript.make_playerdeck());
-
+        StartCoroutine(ready_player());
+        StartCoroutine(ready_enemy());
         yield return new WaitForSeconds(3.0f);//手札生成処理後の時間
+
         StartCoroutine(deckScript.make_field(0));
         StartCoroutine(enemy_deckScript.make_field(1));
-        yield return new WaitForSeconds(3.0f);//敵UIの起動時間
+        fieldController.play_se_speed();
         now_playing_flg = 1;
         StartCoroutine(enemyUI.enemy_action());
+    }
+
+    public IEnumerator ready_player()
+    {
+        enemyHandController.ready_game();
+        enemyHandController.clear_hand();
+        yield return StartCoroutine(enemy_deckScript.make_playerdeck());
+        yield return StartCoroutine(enemy_deckScript.make_playerhand());
+    }
+
+    public IEnumerator ready_enemy()
+    {
+        playerHandController.ready_game();
+        playerHandController.clear_hand();
+        yield return StartCoroutine(deckScript.make_playerdeck());
+        yield return StartCoroutine(deckScript.make_playerhand());
     }
 
 
@@ -106,6 +120,7 @@ public class GameController : MonoBehaviour
             Debug.Log(@$"スピード成立");
             dialogText.text = @$"場札をリセットします。";
             yield return new WaitForSeconds(2.0f);
+            fieldController.play_se_speed();
             StartCoroutine(deckScript.make_field(0));
             StartCoroutine(enemy_deckScript.make_field(1));
             now_playing_flg = 1;

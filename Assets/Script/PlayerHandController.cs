@@ -21,12 +21,11 @@ public class PlayerHandController : MonoBehaviour
     //Prefabオブジェクトの親オブジェクトへの参照を保持する
     public Transform ParentObj;
 
-    //カード1枚目の初期位置
     int field_start_posx = -620;
     private const int NUMBER_OF_HAND = 5;
     private const int SPACE_OF_CARD = 310;
 
-
+    int playerhand_number = 0;
     //カードデータ
     public struct CardData
     {
@@ -66,23 +65,28 @@ public class PlayerHandController : MonoBehaviour
     //ドロー処理
     public void DrawHand(int deck_number_serial)
     {
-        //number_serialは、1～53までの数字。Deck.csから受け取る。
-        int playerhand_number = 0;
+        //number_serialは、1～53までの数字。Deck.csから受け取る。0はカードがない状態を表す。
+        //手札の状況をチェックし、空いてる場所にシリアルナンバーを代入する。
 
-        //手札の状況をチェックし、空いてる場所にシリアルナンバーを代入。
-        for (int i = 0; i < NUMBER_OF_HAND; i++)
+        if (deck_number_serial > 0)
         {
-            if (playerhands[i].number_serial == 0)
+            for (int i = 0; i < NUMBER_OF_HAND; i++)
             {
-                Debug.Log(@$"PlayerHandController.cs {i}番目のハンドが空");
-                playerhands[i].number_serial = deck_number_serial;
-                playerhand_number = i;
-                break;
+                if (playerhands[i].number_serial == 0)
+                {
+                    Debug.Log(@$"PlayerHandController.cs {i}番目のハンドが空");
+                    playerhands[i].number_serial = deck_number_serial;
+                    playerhand_number = i;
+                    break;
+                }
             }
+            check_draw_position(playerhand_number);
+            change_carddata(playerhand_number, playerhands[playerhand_number].number_serial);
         }
-        check_draw_position(playerhand_number);
-        change_carddata(playerhand_number, playerhands[playerhand_number].number_serial);
-        
+        else
+        {
+            Debug.Log(@$"PlayerHandController.cs 山札が空です");
+        }
     }
 
     void check_draw_position(int playerhand_number)
