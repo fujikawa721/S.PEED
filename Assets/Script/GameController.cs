@@ -23,9 +23,11 @@ public class GameController : MonoBehaviour
     [SerializeField] TextMeshProUGUI dialogText;
 
 
-    public int player_action_flg;
-    public int enemy_action_flg;
-    public int now_playing_flg = 0;
+    public bool player_action_flg;
+    public bool enemy_action_flg;
+    public bool now_playing_flg;
+
+
 
 
     // Start is called before the first frame update
@@ -60,7 +62,7 @@ public class GameController : MonoBehaviour
         StartCoroutine(deckScript.make_field(0));
         StartCoroutine(enemy_deckScript.make_field(1));
         fieldController.play_se_speed();
-        now_playing_flg = 1;
+        now_playing_flg = true;
         StartCoroutine(enemyUI.enemy_action());
     }
 
@@ -85,11 +87,11 @@ public class GameController : MonoBehaviour
     {
         
     //両者がプレイ操作可能な時にゲームに関わる監視を行う。
-        if (now_playing_flg == 1)
+        if (now_playing_flg == true)
         {
             judge_bothplayer_hp();
             check_player_canaction();
-            if (player_action_flg == 0)
+            if (player_action_flg == false)
             {
                 dialogText.text = @$"出せるカードがありません。";
             }
@@ -112,10 +114,10 @@ public class GameController : MonoBehaviour
 
     public IEnumerator speed()
     {
-        if (player_action_flg == 0 && enemy_action_flg == 0)
+        if (player_action_flg == false && enemy_action_flg == false)
         {
             
-            now_playing_flg = 0;
+            now_playing_flg = false;
             yield return new WaitForSeconds(1.0f);
             Debug.Log(@$"スピード成立");
             dialogText.text = @$"場札をリセットします。";
@@ -123,7 +125,7 @@ public class GameController : MonoBehaviour
             fieldController.play_se_speed();
             StartCoroutine(deckScript.make_field(0));
             StartCoroutine(enemy_deckScript.make_field(1));
-            now_playing_flg = 1;
+            now_playing_flg = true;
         }
         yield return null;
     }
@@ -132,7 +134,7 @@ public class GameController : MonoBehaviour
     {
         if(player.now_hp <= 0 || enemyplayer.now_hp <= 0)
         {
-            now_playing_flg = 0;
+            now_playing_flg = false;
             dialogText.text = @$"ゲーム終了";
         }
     }

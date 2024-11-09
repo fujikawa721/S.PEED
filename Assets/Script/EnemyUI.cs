@@ -26,7 +26,7 @@ public class EnemyUI : MonoBehaviour
         Debug.Log(@$"“GUI‚ð‹N“®");
         for (int i = 0; i < 999; i++)
         {
-            if (gameController.enemy_action_flg == 1)
+            if (gameController.enemy_action_flg == true)
             {
                 Debug.Log(@$"“GƒvƒŒƒCƒ„[‚ªŽèŽD‚ðêŽD‚É’u‚«‚Ü‚·");
                 enemyHandController.put_handcard_center();

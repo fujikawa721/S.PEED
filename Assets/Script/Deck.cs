@@ -2,13 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using TMPro;
 
-public class Deck : MonoBehaviour
+public class Deck : MonoBehaviour, IPointerClickHandler
 {
     [SerializeField] PlayerHandController playerHand;
     [SerializeField] FieldController Field;
     [SerializeField] TextMeshProUGUI decks_zan_Text;
+    [SerializeField] Player player_script;
 
     AudioSource audioSource;
     public AudioClip deck_max;
@@ -34,6 +36,24 @@ public class Deck : MonoBehaviour
     {
         
     }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        Debug.Log(@$"山札がクリックされた");
+        Debug.Log(@$"SPポイント{player_script.now_sp_point}");
+
+        if (player_script.can_special == true)
+        {
+            Debug.Log(@$"スペシャル発動！");
+            StartCoroutine(player_script.check_special_type());
+        }
+        else
+        {
+            Debug.Log(@$"スペシャルゲージが溜まってません");
+        }
+    }
+
+
 
     public void update_deck_number()
     {
@@ -85,18 +105,14 @@ public class Deck : MonoBehaviour
 
     public IEnumerator make_field(int fieldcard_number)
     {
-        if (decks_zan > 0)
+        if (decks_zan < 1)
         {
-            Debug.Log(@$"場札生成処理を開始");
+            yield return StartCoroutine(make_playerdeck());
+        }
+        Debug.Log(@$"場札生成処理を開始");
             decks_zan--;
             Field.draw_deck(fieldcard_number, decks[decks_zan]);
             yield return new WaitForSeconds(SPEED_DRAWFIELD);
-        }
-        else
-        {
-            Field.draw_deck(fieldcard_number, 0);
-            yield return new WaitForSeconds(SPEED_DRAWFIELD);
-        }
     }
 
 

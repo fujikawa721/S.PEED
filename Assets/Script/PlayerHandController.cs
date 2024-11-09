@@ -156,6 +156,7 @@ public class PlayerHandController : MonoBehaviour
         int correct_judge = fieldscript.judge_putcard_center(playerhands[hand_number].card_number, playerhands[hand_number].card_mark, playerhands[hand_number].number_serial, playerhands[hand_number].card_obj);
         if (correct_judge == 1)
         {
+            judge_sp_gauge(hand_number);
             player_script.attack_enemy();
             Debug.Log(@$"場に出しました correct_judgeは{correct_judge},{hand_number}枚目にドローします。");
             playerhands[hand_number].number_serial = 0;
@@ -165,7 +166,7 @@ public class PlayerHandController : MonoBehaviour
     }
 
     //カードが出せるかチェック。出せるなら1を返す。
-    public int check_can_action()
+    public bool check_can_action()
     {
         int stuck_checker = 0;
         for (int i = 0; i < NUMBER_OF_HAND; i++){
@@ -183,10 +184,21 @@ public class PlayerHandController : MonoBehaviour
 
         if(stuck_checker == NUMBER_OF_HAND)
         {
-            return 0;
+            return false;
         }
-        return 1; 
+        return true; 
     }
+
+
+    //SPゲージ増加処理。キャラクターの属性マークと出したカードのマークが同一であればSPゲージを増加させる。
+    private void judge_sp_gauge(int hand_number)
+    {
+        if (playerhands[hand_number].card_mark == player_script.element_mark)
+        {
+            player_script.plus_sp_gauge();
+        }
+    }
+
 
     //エネミーUIが実行する。
     public void put_handcard_center()
@@ -196,6 +208,7 @@ public class PlayerHandController : MonoBehaviour
             int correct_judge = fieldscript.check_hand_action(playerhands[i].card_number, playerhands[i].card_mark);
             if (correct_judge == 1)
             {
+                judge_sp_gauge(i);
                 player_script.attack_enemy();
                 fieldscript.judge_putcard_center(playerhands[i].card_number, playerhands[i].card_mark, playerhands[i].number_serial, playerhands[i].card_obj);
                 playerhands[i].number_serial = 0;
