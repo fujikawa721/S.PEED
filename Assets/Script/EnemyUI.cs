@@ -24,12 +24,18 @@ public class EnemyUI : MonoBehaviour
     public IEnumerator enemy_action()
     {
         Debug.Log(@$"“GUI‚ð‹N“®");
-        for (int i = 0; i < 999; i++)
+        while(gameController.end_game_flg == false)
         {
+            if (gameController.end_game_flg == true)
+            {
+                break;
+            }
+
             if (gameController.enemy_action_flg == true)
             {
                 Debug.Log(@$"“GƒvƒŒƒCƒ„[‚ªŽèŽD‚ðêŽD‚É’u‚«‚Ü‚·");
                 enemyHandController.put_handcard_center();
+                enemyHandController.do_special();
                 yield return new WaitForSeconds(ACTION_SPEED);
             }
             else{
@@ -40,4 +46,6 @@ public class EnemyUI : MonoBehaviour
         yield return null;
         }
     }
+
+
 }

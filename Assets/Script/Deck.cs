@@ -123,13 +123,13 @@ public class Deck : MonoBehaviour, IPointerClickHandler
             
             yield return StartCoroutine(make_playerdeck());
         }
-
         Debug.Log(@$"ドロー処理を開始");
         decks_zan--;
         playerHand.DrawHand(decks[decks_zan]);
         yield return new WaitForSeconds(SPEED_DRAWHAND);
     
     }
+
 
     //★★効果音★★
     public IEnumerator ready_game()

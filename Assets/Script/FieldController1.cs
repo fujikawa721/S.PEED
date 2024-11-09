@@ -142,7 +142,6 @@ public class FieldController : MonoBehaviour
                 CardParameter(i, fieldcards[i].number_serial);
                 
                 return 1;
-                break;
             }
         }
         Debug.Log(@$"‚¨è•t‚«‚Å‚·B");
@@ -156,7 +155,6 @@ public class FieldController : MonoBehaviour
             if (hand_card_number == fieldcards[i].card_number_under || hand_card_number == fieldcards[i].card_number_over)
             {
                 return 1;
-                break;
             }
         }
         return 0;

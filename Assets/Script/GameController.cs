@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class GameController : MonoBehaviour
@@ -16,16 +17,19 @@ public class GameController : MonoBehaviour
     [SerializeField] FieldController fieldController;
     [SerializeField] Player player;
     [SerializeField] Player enemyplayer;
+    [SerializeField] GameObject noaction_curtain;
 
     [SerializeField] PlayerHandController playerHandController;
     [SerializeField] EnemyHandController enemyHandController;
 
     [SerializeField] TextMeshProUGUI dialogText;
+    [SerializeField] TextMeshProUGUI game_message;
 
 
     public bool player_action_flg;
     public bool enemy_action_flg;
     public bool now_playing_flg;
+    public bool end_game_flg;
 
 
 
@@ -51,6 +55,7 @@ public class GameController : MonoBehaviour
 
     public IEnumerator start_game()
     {
+        game_message.text = @$"READY...";
         yield return StartCoroutine(fieldController.ready_game());
         yield return StartCoroutine(deckScript.ready_game());
         yield return StartCoroutine(enemy_deckScript.ready_game());
@@ -59,11 +64,14 @@ public class GameController : MonoBehaviour
         StartCoroutine(ready_enemy());
         yield return new WaitForSeconds(3.0f);//éËéDê∂ê¨èàóùå„ÇÃéûä‘
 
+        game_message.text = @$"START!!";
         StartCoroutine(deckScript.make_field(0));
         StartCoroutine(enemy_deckScript.make_field(1));
         fieldController.play_se_speed();
         now_playing_flg = true;
+        noaction_curtain.SetActive(false);
         StartCoroutine(enemyUI.enemy_action());
+        game_message.text = @$"";
     }
 
     public IEnumerator ready_player()
@@ -134,8 +142,9 @@ public class GameController : MonoBehaviour
     {
         if(player.now_hp <= 0 || enemyplayer.now_hp <= 0)
         {
-            now_playing_flg = false;
-            dialogText.text = @$"ÉQÅ[ÉÄèIóπ";
+            end_game_flg = true;
+            noaction_curtain.SetActive(true);
+            game_message.text = @$"GAME SET!!";
         }
     }
 }

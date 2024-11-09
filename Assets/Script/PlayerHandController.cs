@@ -193,7 +193,7 @@ public class PlayerHandController : MonoBehaviour
     //SPゲージ増加処理。キャラクターの属性マークと出したカードのマークが同一であればSPゲージを増加させる。
     private void judge_sp_gauge(int hand_number)
     {
-        if (playerhands[hand_number].card_mark == player_script.element_mark)
+        if (playerhands[hand_number].card_mark == player_script.charaData.element_mark)
         {
             player_script.plus_sp_gauge();
         }
@@ -215,6 +215,14 @@ public class PlayerHandController : MonoBehaviour
                 StartCoroutine(deckscript.Draw_One());
                 break;
             }
+        }
+    }
+
+    public  void do_special()
+    {
+        if (player_script.can_special == true)
+        {
+            StartCoroutine(player_script.check_special_type());
         }
     }
 
