@@ -74,7 +74,6 @@ public class PlayerHandController : MonoBehaviour
             {
                 if (playerhands[i].number_serial == 0)
                 {
-                    Debug.Log(@$"PlayerHandController.cs {i}番目のハンドが空");
                     playerhands[i].number_serial = deck_number_serial;
                     playerhand_number = i;
                     break;
@@ -94,7 +93,6 @@ public class PlayerHandController : MonoBehaviour
         int posx = field_start_posx + playerhand_number * SPACE_OF_CARD;
         playerhands[playerhand_number].card_obj = Instantiate(playercard, ParentObj, false);
         playerhands[playerhand_number].card_obj.transform.localPosition = new Vector3(posx, 0, -1);
-        Debug.Log(@$"PlayerHandController.cs check_draw_position {posx}カード生成位置の設定");
     }
 
 
@@ -110,7 +108,6 @@ public class PlayerHandController : MonoBehaviour
         //カードに情報を渡す
         decompose_card_parameter(playerhand_number, number_serial);
         cardscript.CardParameter(playerhand_number);
-        Debug.Log(@$"PlayerHandController.cs change_carddata {playerhand_number}番目のハンドにカードを追加します。");
     }
 
     //カードの詳細情報を設定

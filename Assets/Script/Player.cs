@@ -12,6 +12,13 @@ public class Player : MonoBehaviour
     [SerializeField] private CutInGenerator cutInGenerator;
     [SerializeField] public CharacterData charaData;
 
+    //キャラクターの顔画像読み込み
+    [SerializeField] public Sprite face_001;
+    [SerializeField] public Sprite face_002;
+    [SerializeField] public GameObject face_obj;
+    [SerializeField] private Image face_img;
+
+
     AudioSource audioSource;
     public AudioClip spgauge_max;
 
@@ -28,8 +35,7 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        audioSource = GetComponent<AudioSource>();
-        check_cutin_img();
+        ready_game();
     }
 
     // Update is called once per frame
@@ -91,9 +97,11 @@ public class Player : MonoBehaviour
     }
 
 
-    private void check_cutin_img()
+    private void ready_game()
     {
+        audioSource = GetComponent<AudioSource>();
         cutInGenerator.check_cutin_img(charaData.special_id);
+        check_playerface();
     }
 
     public IEnumerator special_bakuen()
@@ -114,6 +122,23 @@ public class Player : MonoBehaviour
         judge_sp_point();
         spGauge.increase_spgauge(0f);
         yield return null;
+    }
+
+    private void check_playerface()
+    {
+        face_img = face_obj.GetComponent<Image>(); ;
+        switch (charaData.special_id)
+        {
+            case 1:
+                face_img.sprite = face_001;
+                break;
+            case 2:
+                face_img.sprite = face_002;
+                break;
+            default:
+                Debug.Log(@$"スペシャルIDにエラーがあります");
+                break;
+        }
     }
 
     //★効果音再生

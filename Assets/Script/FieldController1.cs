@@ -8,7 +8,7 @@ public class FieldController : MonoBehaviour
 {
     AudioSource audioSource;
     public AudioClip speed;
-
+    public AudioClip whistle;
 
     //トランプのプレハブ
     public GameObject fieldcard;
@@ -119,7 +119,6 @@ public class FieldController : MonoBehaviour
             fieldcards[fieldcard_number].card_number_over = 1;
         }
 
-        Debug.Log(@$"{fieldcard_number}回目：数字:{fieldcards[fieldcard_number].card_number}、マーク：{fieldcards[fieldcard_number].card_mark}");
     }
 
     public void CardImageUpdate(int fieldcard_number, int number_serial)
@@ -160,22 +159,6 @@ public class FieldController : MonoBehaviour
         return 0;
     }
 
-    //仕切り直しの時に山札からじゃなくてランダム生成する処理（未使用）
-    public IEnumerator renew_filed_card()
-    {
-        Debug.Log(@$"fieldController.cs renew_field_card 処理開始");
-        play_se_speed();
-        for (int i = 0; i < 2; i++)
-        {
-            {
-                var renew_number_serial = Random.Range(1, 52);
-                CardImageUpdate(i, renew_number_serial);
-                CardParameter(i, renew_number_serial);
-            }
-        }
-        yield return null;
-
-    }
 
     public IEnumerator animate_putcard_center(int center_number, GameObject hand_card)
     {
@@ -191,5 +174,13 @@ public class FieldController : MonoBehaviour
         audioSource.clip = speed;
         audioSource.Play();
     }
+
+    public void play_se_whistle()
+    {
+        audioSource.clip = whistle;
+        audioSource.Play();
+    }
+
+    
 
 }

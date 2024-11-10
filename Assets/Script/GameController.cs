@@ -18,6 +18,7 @@ public class GameController : MonoBehaviour
     [SerializeField] Player player;
     [SerializeField] Player enemyplayer;
     [SerializeField] GameObject noaction_curtain;
+    [SerializeField] GameGuidance gameGuidance;
 
     [SerializeField] PlayerHandController playerHandController;
     [SerializeField] EnemyHandController enemyHandController;
@@ -127,13 +128,25 @@ public class GameController : MonoBehaviour
             
             now_playing_flg = false;
             yield return new WaitForSeconds(1.0f);
+            gameGuidance.play_se_voice_break();
+            game_message.text = @$"仕切り直し";
             Debug.Log(@$"スピード成立");
             dialogText.text = @$"場札をリセットします。";
             yield return new WaitForSeconds(2.0f);
+
+            game_message.text = @$"スピー　 ";
+            gameGuidance.play_se_voice_spee();
+            yield return new WaitForSeconds(2.0f);
+
+            game_message.text = @$"スピード!";
+            gameGuidance.play_se_voice_do();
+            yield return new WaitForSeconds(0.5f);
             fieldController.play_se_speed();
             StartCoroutine(deckScript.make_field(0));
             StartCoroutine(enemy_deckScript.make_field(1));
             now_playing_flg = true;
+            game_message.text = @$"";
+
         }
         yield return null;
     }
@@ -145,6 +158,7 @@ public class GameController : MonoBehaviour
             end_game_flg = true;
             noaction_curtain.SetActive(true);
             game_message.text = @$"GAME SET!!";
+            fieldController.play_se_whistle();
         }
     }
 }
