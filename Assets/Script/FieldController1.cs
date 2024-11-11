@@ -179,6 +179,7 @@ public class FieldController : MonoBehaviour
     {
         audioSource.clip = whistle;
         audioSource.Play();
+        Debug.Log(@$"ホイッスルSE");
     }
 
     

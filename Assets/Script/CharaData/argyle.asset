@@ -12,11 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6b88ff1b4a706a40a8f64f759cccbe0, type: 3}
   m_Name: argyle
   m_EditorClassIdentifier: 
-  chara_name: "\u30A2\u30FC\u30AC\u30A4\u30EB"
+  character_name: "\u30A2\u30FC\u30AC\u30A4\u30EB"
+  character_id: 1
   max_hp: 100
-  now_hp: 100
-  attack_damage: 5
+  base_damage: 5
   max_sp_point: 3
-  now_sp_point: 3
   element_mark: D
-  special_id: 1

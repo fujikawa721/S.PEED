@@ -11,6 +11,9 @@ public class Deck : MonoBehaviour, IPointerClickHandler
     [SerializeField] FieldController Field;
     [SerializeField] TextMeshProUGUI decks_zan_Text;
     [SerializeField] Player player_script;
+    [SerializeField] Image deck_img;
+
+
 
     AudioSource audioSource;
     public AudioClip deck_max;
@@ -39,18 +42,38 @@ public class Deck : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        Debug.Log(@$"山札がクリックされた");
         Debug.Log(@$"SPポイント{player_script.now_sp_point}");
 
         if (player_script.can_special == true)
         {
             Debug.Log(@$"スペシャル発動！");
             StartCoroutine(player_script.check_special_type());
+            transform.position -= Vector3.up * 0.3f;
+            transform.localScale = Vector3.one * 1.0f;
         }
         else
         {
             Debug.Log(@$"スペシャルゲージが溜まってません");
         }
+    }
+
+    public void OnPointerEnter()
+    {
+        if (player_script.can_special == true)
+        {
+            transform.position += Vector3.up * 0.3f;
+            transform.localScale = Vector3.one * 1.1f;
+        }
+    }
+
+    public void OnPointerExit()
+    {
+        if (player_script.can_special == true)
+        {
+            transform.position -= Vector3.up * 0.3f;
+            transform.localScale = Vector3.one * 1.0f;
+        }
+
     }
 
 
@@ -129,6 +152,8 @@ public class Deck : MonoBehaviour, IPointerClickHandler
         yield return new WaitForSeconds(SPEED_DRAWHAND);
     
     }
+
+
 
 
     //★★効果音★★

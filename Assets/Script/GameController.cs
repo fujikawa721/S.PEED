@@ -100,6 +100,7 @@ public class GameController : MonoBehaviour
         {
             judge_bothplayer_hp();
             check_player_canaction();
+            
             if (player_action_flg == false)
             {
                 dialogText.text = @$"出せるカードがありません。";
@@ -110,6 +111,11 @@ public class GameController : MonoBehaviour
             }
             
             yield return StartCoroutine(speed());
+
+            if (player.can_special == true)
+            {
+                dialogText.text = @$"S.Pゲージが満タンです。山札タッチでS.P発動";
+            }
 
         }
         yield return null;
@@ -125,9 +131,11 @@ public class GameController : MonoBehaviour
     {
         if (player_action_flg == false && enemy_action_flg == false)
         {
-            
             now_playing_flg = false;
             yield return new WaitForSeconds(1.0f);
+
+            noaction_curtain.SetActive(true);
+            fieldController.play_se_whistle();
             gameGuidance.play_se_voice_break();
             game_message.text = @$"仕切り直し";
             Debug.Log(@$"スピード成立");
@@ -144,6 +152,7 @@ public class GameController : MonoBehaviour
             fieldController.play_se_speed();
             StartCoroutine(deckScript.make_field(0));
             StartCoroutine(enemy_deckScript.make_field(1));
+            noaction_curtain.SetActive(false);
             now_playing_flg = true;
             game_message.text = @$"";
 
@@ -155,10 +164,12 @@ public class GameController : MonoBehaviour
     {
         if(player.now_hp <= 0 || enemyplayer.now_hp <= 0)
         {
+            now_playing_flg = false;
             end_game_flg = true;
             noaction_curtain.SetActive(true);
             game_message.text = @$"GAME SET!!";
             fieldController.play_se_whistle();
         }
     }
+
 }

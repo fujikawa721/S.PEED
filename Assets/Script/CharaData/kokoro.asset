@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6b88ff1b4a706a40a8f64f759cccbe0, type: 3}
   m_Name: kokoro
   m_EditorClassIdentifier: 
-  chara_name: "\u30B3\u30B3\u30ED"
+  character_name: "\u30B3\u30B3\u30ED"
+  character_id: 2
   max_hp: 100
-  attack_damage: 5
+  base_damage: 5
   max_sp_point: 5
   element_mark: C
-  special_id: 2
