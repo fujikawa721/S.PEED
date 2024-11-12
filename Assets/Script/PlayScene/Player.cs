@@ -44,7 +44,7 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        ready_game();
+
     }
 
     // Update is called once per frame
@@ -121,7 +121,7 @@ public class Player : MonoBehaviour
     }
 
 
-    private void ready_game()
+    public void ready_game()
     {
         audioSource = GetComponent<AudioSource>();
         cutInGenerator.check_cutin_img(charaData.character_id);

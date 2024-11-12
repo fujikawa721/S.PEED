@@ -12,5 +12,8 @@ public class CharacterData : ScriptableObject
     public int base_damage;
     public int max_sp_point;
     public string element_mark;
-    
+
+    public string character_type;
+    public string sp_name;
+    public string sp_info;
 }

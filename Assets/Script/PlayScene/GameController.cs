@@ -35,16 +35,12 @@ public class GameController : MonoBehaviour
 
 
 
-    // Start is called before the first frame update
     void Start()
     {
         StartCoroutine(start_game());
-        
-
 
     }
 
-    // Update is called once per frame
     void Update()
     {
         deckScript.update_deck_number();
@@ -56,6 +52,7 @@ public class GameController : MonoBehaviour
 
     public IEnumerator start_game()
     {
+        pass_character_data();
         game_message.text = @$"READY...";
         yield return StartCoroutine(fieldController.ready_game());
         yield return StartCoroutine(deckScript.ready_game());
@@ -138,7 +135,6 @@ public class GameController : MonoBehaviour
             fieldController.play_se_whistle();
             gameGuidance.play_se_voice_break();
             game_message.text = @$"仕切り直し";
-            Debug.Log(@$"スピード成立");
             dialogText.text = @$"場札をリセットします。";
             yield return new WaitForSeconds(2.0f);
 
@@ -170,6 +166,14 @@ public class GameController : MonoBehaviour
             game_message.text = @$"GAME SET!!";
             fieldController.play_se_whistle();
         }
+    }
+
+    private void pass_character_data()
+    {
+        player.charaData = SelectController.player_character_data;
+        enemyplayer.charaData = SelectController.enemy_character_data;
+        player.ready_game();
+        enemyplayer.ready_game();
     }
 
 }
