@@ -7,64 +7,56 @@ using TMPro;
 
 public class CutInGenerator : MonoBehaviour
 {
-    [SerializeField] private GameObject cutin_obj;
+    [SerializeField] private GameObject cutInObject;
 
 
-    [SerializeField] public Sprite cutin_001;
-    [SerializeField] public Sprite cutin_002;
-    [SerializeField] private Image catin_img;
+    [SerializeField] public Sprite cutIn001;
+    [SerializeField] public Sprite cutIn002;
+    [SerializeField] private Image catInImg;
 
-    [SerializeField] TextMeshProUGUI text_top;
-    [SerializeField] TextMeshProUGUI text_bottom;
+    [SerializeField] TextMeshProUGUI textTop;
+    [SerializeField] TextMeshProUGUI textBottom;
 
 
     private const float CUTIN_SPEED = 0.5f;//カットインが表示される速度
-    private string special_name;
+    private string specialName;
 
     AudioSource audioSource;
-    public AudioClip sp_do;
+    public AudioClip spDo;
 
-    // Start is called before the first frame update
-    void Start()
+    public void ReadyGame()
     {
         audioSource = GetComponent<AudioSource>();
-        cutin_obj.SetActive(false);
-        
+        cutInObject.SetActive(false);
     }
 
-    // Update is called once per frame
-    void Update()
+    public IEnumerator AnimateSpecialCutIn()
     {
-        
-    }
-
-    public IEnumerator animate_special_cutin()
-    {
-        play_se_sp_do();
-        cutin_obj.SetActive(true);
-        text_bottom.text = special_name;
-        catin_img.DOFillAmount(1.0f, CUTIN_SPEED).OnComplete(() =>
+        playSeSpDo();
+        cutInObject.SetActive(true);
+        textBottom.text = specialName;
+        catInImg.DOFillAmount(1.0f, CUTIN_SPEED).OnComplete(() =>
         {
-            catin_img.DOFillAmount(0f, CUTIN_SPEED).SetDelay(5);
+            catInImg.DOFillAmount(0f, CUTIN_SPEED).SetDelay(5);
         });
         yield return new WaitForSeconds(6.0f);
-        cutin_obj.SetActive(false);
+        cutInObject.SetActive(false);
     }
 
 
-    public void check_cutin_img(int special_id)
+    public void CheckCutInImg(int specialId)
     {
-        catin_img = GetComponent<Image>();
-        catin_img.DOFillAmount(0f, 0);
-        switch (special_id)
+        catInImg = GetComponent<Image>();
+        catInImg.DOFillAmount(0f, 0);
+        switch (specialId)
         {
             case 1:
-                catin_img.sprite = cutin_001;
-                special_name = "火閃斬";
+                catInImg.sprite = cutIn001;
+                specialName = "火閃斬";
                 break;
             case 2:
-                catin_img.sprite = cutin_002;
-                special_name = "いやしの歌";
+                catInImg.sprite = cutIn002;
+                specialName = "いやしの歌";
                 break;
             default:
                 Debug.Log(@$"スペシャルIDにエラーがあります");
@@ -73,9 +65,9 @@ public class CutInGenerator : MonoBehaviour
     }
 
     //★効果音再生
-    public void play_se_sp_do()
+    public void playSeSpDo()
     {
-        audioSource.clip = sp_do;
+        audioSource.clip = spDo;
         audioSource.Play();
     }
 }

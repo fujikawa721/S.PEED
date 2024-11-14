@@ -9,78 +9,73 @@ public class PlayerHandController : MonoBehaviour
     AudioSource audioSource;
     public AudioClip draw;
 
-    [SerializeField] Deck deckscript;
-    [SerializeField] FieldController fieldscript;
-    [SerializeField] Player player_script;
+    [SerializeField] private Deck deck;
+    [SerializeField] private FieldController fieldController;
+    [SerializeField] private Player player;
 
     //トランプのプレハブ
-    public GameObject playercard;//ノーマル保留
+    public GameObject cardPrefab;
     private Image cardImage;
-    private Card cardscript;
+    private Card cardScript;
 
     //Prefabオブジェクトの親オブジェクトへの参照を保持する
     public Transform ParentObj;
 
-    int field_start_posx = -620;
+    private int drawPositionDefault = -620;
     private const int NUMBER_OF_HAND = 5;
     private const int SPACE_OF_CARD = 310;
+    
 
-    int playerhand_number = 0;
-    //カードデータ
     public struct CardData
     {
-        public int number_serial;
-        public int card_number;
-        public string card_mark;
-        public GameObject card_obj;
+        public int serialNumber;
+        public int cardNumber;
+        public string cardMark;
+        public GameObject cardObject;
         public Image cardImage;
     }
 
-    public CardData[] playerhands = new CardData[NUMBER_OF_HAND];
+    public CardData[] playerHands = new CardData[NUMBER_OF_HAND];
 
-    // Start is called before the first frame update
-    void Start()
+    
+
+    public IEnumerator ReadyGame()
     {
-        
+        audioSource = GetComponent<AudioSource>();
+        ClearHand();
+        yield return null;
+
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-
-    //手札リセット処理
-    public void clear_hand()
+    
+    public void ClearHand()
     {
         for (int i = 0; i < NUMBER_OF_HAND; i++)
         {
-                playerhands[i].number_serial = 0;
+            playerHands[i].serialNumber = 0;
         }
     }
 
-
-
-    //ドロー処理
-    public void DrawHand(int deck_number_serial)
+    /// <summary>
+    /// Deck.csから1～53のシリアルナンバーを受け取る。0はカードがない状態を表す。
+    /// 手札の状況をチェックし、空いてる場所にシリアルナンバーを代入する。
+    /// </summary>
+    public void DrawHand(int deckNumberSerial)
     {
-        //number_serialは、1～53までの数字。Deck.csから受け取る。0はカードがない状態を表す。
-        //手札の状況をチェックし、空いてる場所にシリアルナンバーを代入する。
-
-        if (deck_number_serial > 0)
+        int playerHandNumber = 0;
+        if (deckNumberSerial > 0)
         {
             for (int i = 0; i < NUMBER_OF_HAND; i++)
             {
-                if (playerhands[i].number_serial == 0)
+                if (playerHands[i].serialNumber == 0)
                 {
-                    playerhands[i].number_serial = deck_number_serial;
-                    playerhand_number = i;
+                    playerHands[i].serialNumber = deckNumberSerial;
+                    playerHandNumber = i;
                     break;
                 }
             }
-            check_draw_position(playerhand_number);
-            change_carddata(playerhand_number, playerhands[playerhand_number].number_serial);
+            CheckDrawPosition(playerHandNumber);
+            ChangeCarddata(playerHandNumber, playerHands[playerHandNumber].serialNumber);
         }
         else
         {
@@ -88,148 +83,165 @@ public class PlayerHandController : MonoBehaviour
         }
     }
 
-    void check_draw_position(int playerhand_number)
+
+    /// <summary>
+    /// プレイヤーが手札をクリックした時に呼び出される。カードを置ける場合は攻撃を、置けなかった場合はお手付き処理を実行
+    /// </summary>
+    /// <param name="handNumber"></param>
+    public void JudgePlayerAction(int handNumber)
     {
-        int posx = field_start_posx + playerhand_number * SPACE_OF_CARD;
-        playerhands[playerhand_number].card_obj = Instantiate(playercard, ParentObj, false);
-        playerhands[playerhand_number].card_obj.transform.localPosition = new Vector3(posx, 0, -1);
-    }
-
-
-    void change_carddata(int playerhand_number,int number_serial)
-    {
-        cardImage = playerhands[playerhand_number].card_obj.GetComponent<Image>();
-        cardscript = playerhands[playerhand_number].card_obj.GetComponent<Card>();//Card.csを読み込み
-
-        play_se_draw();
-        //通し番号に応じてカードの画像を変更
-        cardImage.sprite = Resources.Load<Sprite>("CardImages/" + number_serial.ToString());
-
-        //カードに情報を渡す
-        decompose_card_parameter(playerhand_number, number_serial);
-        cardscript.CardParameter(playerhand_number);
-    }
-
-    //カードの詳細情報を設定
-    public void decompose_card_parameter(int playerhand_number, int number_serial)
-    {
-        //受け取ったシリアルナンバーを数字とマークに分解。
-        if (number_serial >= 1 && number_serial <= 13)
+        int judgeResult = fieldController.JudgeCanPutCard(playerHands[handNumber].cardNumber);
+        if (judgeResult == 1)
         {
-            playerhands[playerhand_number].card_number = number_serial;
-            playerhands[playerhand_number].card_mark = "C";
-        }
-        else if (number_serial >= 14 && number_serial <= 26)
-        {
-            playerhands[playerhand_number].card_number = number_serial - 13;
-            playerhands[playerhand_number].card_mark = "D";
-        }
-        else if (number_serial >= 27 && number_serial <= 39)
-        {
-            playerhands[playerhand_number].card_number = number_serial - 26;
-            playerhands[playerhand_number].card_mark = "S";
-        }
-        else if (number_serial >= 40 && number_serial <= 52)
-        {
-            playerhands[playerhand_number].card_number = number_serial - 39;
-            playerhands[playerhand_number].card_mark = "H";
-        }
-        else if (number_serial == 53)
-        {
-            playerhands[playerhand_number].card_number = 0;
-            playerhands[playerhand_number].card_mark = "J";
+            PutCardField(handNumber);
         }
         else
         {
-            Debug.Log(@$"ナンバーエラー:{number_serial}");
+            //お手付きの場合コンボをリセットする処理
         }
     }
 
-
-    //手札のカードと入れ替える関数
-    public void put_card_field(int hand_number)
+    /// <summary>
+    /// エネミーUIが行動する処理。手札を場札に置く処理の後、SPが使用可能か確認する。
+    /// </summary>
+    public void DoEnemyAction()
     {
-        
-        int correct_judge = fieldscript.judge_putcard_center(playerhands[hand_number].card_number, playerhands[hand_number].card_mark, playerhands[hand_number].number_serial, playerhands[hand_number].card_obj);
-        if (correct_judge == 1)
+        for (int i = 0; i < NUMBER_OF_HAND; i++)
         {
-            judge_sp_gauge(hand_number);
-            player_script.attack_enemy();
-            Debug.Log(@$"場に出しました correct_judgeは{correct_judge},{hand_number}枚目にドローします。");
-            playerhands[hand_number].number_serial = 0;
-            StartCoroutine(deckscript.Draw_One());
+            int judgeResult = fieldController.JudgeCanPutCard(playerHands[i].cardNumber);
+            if (judgeResult == 1)
+            {
+                PutCardField(i);
+                break;
+            }
         }
-        
+        DoSpecial();
     }
 
-    //カードが出せるかチェック。出せるなら1を返す。
-    public bool check_can_action()
+
+    /// <summary>
+    /// 場札に置くことができるカードがプレイヤーの手札に存在するか確認する。
+    /// </summary>
+    public bool CheckCanAction()
     {
-        int stuck_checker = 0;
+        int stuckChecker = 0;
         for (int i = 0; i < NUMBER_OF_HAND; i++){
-            int correct_judge = fieldscript.check_hand_action(playerhands[i].card_number, playerhands[i].card_mark);
+            int correct_judge = fieldController.JudgeCanPutCard(playerHands[i].cardNumber);
             if(correct_judge == 1)
             {
-                stuck_checker = 0;
+                stuckChecker = 0;
                 break;
             }
             else
             {
-                stuck_checker++;
+                stuckChecker++;
             }
         }
 
-        if(stuck_checker == NUMBER_OF_HAND)
+        if(stuckChecker == NUMBER_OF_HAND)
         {
             return false;
         }
         return true; 
     }
 
-
-    //SPゲージ増加処理。キャラクターの属性マークと出したカードのマークが同一であればSPゲージを増加させる。
-    private void judge_sp_gauge(int hand_number)
+    /// <summary>
+    /// 手札から場札にカードを出す処理。
+    /// </summary>
+    private void PutCardField(int handNumber)
     {
-        if (playerhands[hand_number].card_mark == player_script.charaData.element_mark)
+        JudgePlusSpPoint(handNumber);
+        player.AttackEnemy();
+        fieldController.PutCardField(playerHands[handNumber].cardNumber, playerHands[handNumber].cardMark, playerHands[handNumber].serialNumber, playerHands[handNumber].cardObject);
+        playerHands[handNumber].serialNumber = 0;
+        StartCoroutine(deck.DrawOne());
+    }
+
+    /// <summary>
+    /// SPゲージ増加処理。キャラクターの属性マークと出したカードのマークが同一であればSPゲージを増加させる。
+    /// </summary>
+    private void JudgePlusSpPoint(int handNumber)
+    {
+        if (playerHands[handNumber].cardMark == player.characterData.element_mark)
         {
-            player_script.plus_sp_gauge();
+            player.PlusSpGauge();
         }
     }
 
-
-    //エネミーUIが実行する。
-    public void put_handcard_center()
+    private  void DoSpecial()
     {
-        for (int i = 0; i < NUMBER_OF_HAND; i++)
+        if (player.canDoSpecial == true)
         {
-            int correct_judge = fieldscript.check_hand_action(playerhands[i].card_number, playerhands[i].card_mark);
-            if (correct_judge == 1)
-            {
-                judge_sp_gauge(i);
-                player_script.attack_enemy();
-                fieldscript.judge_putcard_center(playerhands[i].card_number, playerhands[i].card_mark, playerhands[i].number_serial, playerhands[i].card_obj);
-                playerhands[i].number_serial = 0;
-                StartCoroutine(deckscript.Draw_One());
-                break;
-            }
+            StartCoroutine(player.DoSpecial());
         }
     }
 
-    public  void do_special()
+    /// <summary>
+    /// ドローする位置を決定する。
+    /// </summary>
+    private void CheckDrawPosition(int playerhandNumber)
     {
-        if (player_script.can_special == true)
+        int posx = drawPositionDefault + playerhandNumber * SPACE_OF_CARD;
+        playerHands[playerhandNumber].cardObject = Instantiate(cardPrefab, ParentObj, false);
+        playerHands[playerhandNumber].cardObject.transform.localPosition = new Vector3(posx, 0, -1);
+    }
+
+    /// <summary>
+    /// ドローしたオブジェクトにカードの情報を渡す。
+    /// </summary>
+    private void ChangeCarddata(int playerhandNumber, int serialNumber)
+    {
+        cardImage = playerHands[playerhandNumber].cardObject.GetComponent<Image>();
+        cardScript = playerHands[playerhandNumber].cardObject.GetComponent<Card>();
+
+        PlaySeDraw();
+        cardImage.sprite = Resources.Load<Sprite>("CardImages/" + serialNumber.ToString());
+
+        DecomposeCardParameter(playerhandNumber, serialNumber);
+        cardScript.CardParameter(playerhandNumber, JudgePlayerAction);
+    }
+
+
+    /// <summary>
+    /// カードの詳細情報を決定する。受け取ったカードナンバーをトランプの数字とマークに分解。
+    /// </summary>
+    private void DecomposeCardParameter(int playerhandNumber, int serialNumber)
+    {
+        if (serialNumber >= 1 && serialNumber <= 13)
         {
-            StartCoroutine(player_script.check_special_type());
+            playerHands[playerhandNumber].cardNumber = serialNumber;
+            playerHands[playerhandNumber].cardMark = "C";
+        }
+        else if (serialNumber >= 14 && serialNumber <= 26)
+        {
+            playerHands[playerhandNumber].cardNumber = serialNumber - 13;
+            playerHands[playerhandNumber].cardMark = "D";
+        }
+        else if (serialNumber >= 27 && serialNumber <= 39)
+        {
+            playerHands[playerhandNumber].cardNumber = serialNumber - 26;
+            playerHands[playerhandNumber].cardMark = "S";
+        }
+        else if (serialNumber >= 40 && serialNumber <= 52)
+        {
+            playerHands[playerhandNumber].cardNumber = serialNumber - 39;
+            playerHands[playerhandNumber].cardMark = "H";
+        }
+        else if (serialNumber == 53)
+        {
+            playerHands[playerhandNumber].cardNumber = 0;
+            playerHands[playerhandNumber].cardMark = "J";
+        }
+        else
+        {
+            Debug.Log(@$"ナンバーエラー:{serialNumber}");
         }
     }
 
-    public void ready_game()
-    {
-        audioSource = GetComponent<AudioSource>();
-    }
+    
 
     //★効果音再生
-    public void play_se_draw()
+    public void PlaySeDraw()
     {
         audioSource.clip = draw;
         audioSource.Play();

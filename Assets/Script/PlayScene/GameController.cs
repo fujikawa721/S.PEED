@@ -11,169 +11,193 @@ public class GameController : MonoBehaviour
     //[SerializeField] PlayerDeck playerDeck;
     
     
-    [SerializeField] Deck deckScript;
-    [SerializeField] EnemyDeck enemy_deckScript;
+    [SerializeField] Deck deck;
+    [SerializeField] EnemyDeck enemyDeck;
     [SerializeField] EnemyUI enemyUI;
     [SerializeField] FieldController fieldController;
     [SerializeField] Player player;
-    [SerializeField] Player enemyplayer;
-    [SerializeField] GameObject noaction_curtain;
+    [SerializeField] Player enemyPlayer;
+    [SerializeField] GameObject noactionCurtain;
+    [SerializeField] GameObject gameMessage;
     [SerializeField] GameGuidance gameGuidance;
 
     [SerializeField] PlayerHandController playerHandController;
-    [SerializeField] EnemyHandController enemyHandController;
+    [SerializeField] PlayerHandController enemyHandController;
 
-    [SerializeField] TextMeshProUGUI dialogText;
-    [SerializeField] TextMeshProUGUI game_message;
+    [SerializeField] TextMeshProUGUI playerActionText;
+    [SerializeField] TextMeshProUGUI gameMessageText;
 
 
-    public bool player_action_flg;
-    public bool enemy_action_flg;
-    public bool now_playing_flg;
-    public bool end_game_flg;
+    public bool canPlayerAction;
+    public bool canEnemyAction;
+    public bool canPlayNow;
+    public bool endGameFlg;
 
 
 
 
     void Start()
     {
-        StartCoroutine(start_game());
+        StartCoroutine(StartGame());
 
     }
 
     void Update()
     {
-        deckScript.update_deck_number();
-        enemy_deckScript.update_deck_number();
-        StartCoroutine(after_start());
-
+        StartCoroutine(JudgePlaying());
     }
 
 
-    public IEnumerator start_game()
+    public IEnumerator StartGame()
     {
-        pass_character_data();
-        game_message.text = @$"READY...";
-        yield return StartCoroutine(fieldController.ready_game());
-        yield return StartCoroutine(deckScript.ready_game());
-        yield return StartCoroutine(enemy_deckScript.ready_game());
-
-        StartCoroutine(ready_player());
-        StartCoroutine(ready_enemy());
+        yield return StartCoroutine(LoadGame());
+        gameMessage.SetActive(true);
+        gameMessageText.text = @$"READY...";
+        
+        StartCoroutine(ReadyPlayer());
+        StartCoroutine(ReadyEnemy());
         yield return new WaitForSeconds(3.0f);//手札生成処理後の時間
 
-        game_message.text = @$"START!!";
-        StartCoroutine(deckScript.make_field(0));
-        StartCoroutine(enemy_deckScript.make_field(1));
-        fieldController.play_se_speed();
-        now_playing_flg = true;
-        noaction_curtain.SetActive(false);
-        StartCoroutine(enemyUI.enemy_action());
-        game_message.text = @$"";
+        gameMessageText.text = @$"START!!";
+        yield return new WaitForSeconds(0.5f);
+
+        StartCoroutine(deck.MakeField(0));
+        StartCoroutine(enemyDeck.MakeField(1));
+        fieldController.PlaySeSpeed();
+        canPlayNow = true;
+        noactionCurtain.SetActive(false);
+        gameMessage.SetActive(false);
+        StartCoroutine(enemyUI.ActionEnemy());
+        gameMessageText.text = @$"";
     }
 
-    public IEnumerator ready_player()
+    private IEnumerator ReadyPlayer()
     {
-        enemyHandController.ready_game();
-        enemyHandController.clear_hand();
-        yield return StartCoroutine(enemy_deckScript.make_playerdeck());
-        yield return StartCoroutine(enemy_deckScript.make_playerhand());
+        yield return StartCoroutine(deck.MakePlayerDeck());
+        yield return StartCoroutine(deck.MakePlayerHand());  
     }
 
-    public IEnumerator ready_enemy()
+    private IEnumerator ReadyEnemy()
     {
-        playerHandController.ready_game();
-        playerHandController.clear_hand();
-        yield return StartCoroutine(deckScript.make_playerdeck());
-        yield return StartCoroutine(deckScript.make_playerhand());
+        yield return StartCoroutine(enemyDeck.MakePlayerDeck());
+        yield return StartCoroutine(enemyDeck.MakePlayerHand());
     }
 
 
-    public IEnumerator after_start()
+    /// <summary>
+    /// プレイ可能中に以下を判定する。「ゲーム終了条件」「プレイヤーの行動可否」「SP発動可能可否」「仕切り直し実行可否」
+    /// </summary>
+    private IEnumerator JudgePlaying()
     {
-        
-    //両者がプレイ操作可能な時にゲームに関わる監視を行う。
-        if (now_playing_flg == true)
+        if (canPlayNow == true)
         {
-            judge_bothplayer_hp();
-            check_player_canaction();
+            JudgeBothPlayerHp();
+            CheckPlayerCanAction();
             
-            if (player_action_flg == false)
+            if (canPlayerAction == false)
             {
-                dialogText.text = @$"出せるカードがありません。";
+                playerActionText.text = @$"出せるカードがありません。";
             }
             else
             {
-                dialogText.text = @$""; ;
+                playerActionText.text = @$""; ;
             }
-            
-            yield return StartCoroutine(speed());
 
-            if (player.can_special == true)
+            if (player.canDoSpecial == true)
             {
-                dialogText.text = @$"S.Pゲージが満タンです。山札タッチでS.P発動";
+                playerActionText.text = @$"S.Pゲージが満タンです。山札タッチでS.P発動";
             }
 
+            if (canPlayerAction == false && canEnemyAction == false)
+            {
+                yield return StartCoroutine(Speed());
+            }
         }
         yield return null;
     }
 
-    public void check_player_canaction()
+    private void CheckPlayerCanAction()
     {
-        player_action_flg = playerHandController.check_can_action();
-        enemy_action_flg = enemyHandController.check_can_action();
+        canPlayerAction = playerHandController.CheckCanAction();
+        canEnemyAction = enemyHandController.CheckCanAction();
     }
 
-    public IEnumerator speed()
+    /// <summary>
+    /// 両プレイヤーが場札にカードを置けない場合、両プレイヤーの山札から場札に1枚ずつカードを置く。
+    /// ゲーム内では『仕切り直し【スピード】と呼ぶ。』
+    /// </summary>
+    public IEnumerator Speed()
     {
-        if (player_action_flg == false && enemy_action_flg == false)
-        {
-            now_playing_flg = false;
-            yield return new WaitForSeconds(1.0f);
+        fieldController.PlaySeWhistle();
+        canPlayNow = false;
+        noactionCurtain.SetActive(true);
+        gameMessage.SetActive(true);
+        gameMessageText.text = @$"仕切り直し";
+        playerActionText.text = @$"場札をリセットします。";
+        yield return new WaitForSeconds(1.0f);
 
-            noaction_curtain.SetActive(true);
-            fieldController.play_se_whistle();
-            gameGuidance.play_se_voice_break();
-            game_message.text = @$"仕切り直し";
-            dialogText.text = @$"場札をリセットします。";
-            yield return new WaitForSeconds(2.0f);
+        gameMessageText.text = @$"スピー　 ";
+        gameGuidance.play_se_voice_spee();
+        yield return new WaitForSeconds(2.0f);
 
-            game_message.text = @$"スピー　 ";
-            gameGuidance.play_se_voice_spee();
-            yield return new WaitForSeconds(2.0f);
+        gameMessageText.text = @$"スピード!";
+        gameGuidance.play_se_voice_do();
+        yield return new WaitForSeconds(0.5f);
+        
+        fieldController.PlaySeSpeed();
+        StartCoroutine(deck.MakeField(0));
+        StartCoroutine(enemyDeck.MakeField(1));
+        noactionCurtain.SetActive(false);
+        gameMessage.SetActive(false);
+        canPlayNow = true;
+        gameMessageText.text = @$"";
 
-            game_message.text = @$"スピード!";
-            gameGuidance.play_se_voice_do();
-            yield return new WaitForSeconds(0.5f);
-            fieldController.play_se_speed();
-            StartCoroutine(deckScript.make_field(0));
-            StartCoroutine(enemy_deckScript.make_field(1));
-            noaction_curtain.SetActive(false);
-            now_playing_flg = true;
-            game_message.text = @$"";
-
-        }
         yield return null;
     }
 
-    public void judge_bothplayer_hp()
+    /// <summary>
+    /// どちらかのプレイヤーのHPが0以下になるとゲームを終了する。
+    /// </summary>
+    public void JudgeBothPlayerHp()
     {
-        if(player.now_hp <= 0 || enemyplayer.now_hp <= 0)
+        if(player.nowHp <= 0 || enemyPlayer.nowHp <= 0)
         {
-            now_playing_flg = false;
-            end_game_flg = true;
-            noaction_curtain.SetActive(true);
-            game_message.text = @$"GAME SET!!";
-            fieldController.play_se_whistle();
+            canPlayNow = false;
+            endGameFlg = true;
+            noactionCurtain.SetActive(true);
+            gameMessage.SetActive(true);
+            gameMessageText.text = @$"GAME SET!!";
+            fieldController.PlaySeWhistle();
         }
     }
 
-    private void pass_character_data()
+    private IEnumerator LoadGame()
     {
-        player.charaData = SelectController.player_character_data;
-        enemyplayer.charaData = SelectController.enemy_character_data;
-        player.ready_game();
-        enemyplayer.ready_game();
+        yield return StartCoroutine(PassCharacterData());
+        yield return StartCoroutine(player.ReadyGame());
+        yield return StartCoroutine(enemyPlayer.ReadyGame());
+        yield return StartCoroutine(fieldController.ReadyGame());
+        yield return StartCoroutine(deck.ReadyGame());
+        yield return StartCoroutine(enemyDeck.ReadyGame());
+
+        yield return StartCoroutine(playerHandController.ReadyGame());
+        yield return StartCoroutine(enemyHandController.ReadyGame()); 
+        
+
+    }
+
+    /// <summary>
+    /// 選択画面で選択したキャラクターをプレイヤーオブジェクトに渡す。両方にデータが入っていない場合は、
+    /// 予めアタッチされていたキャラクターデータをそのまま読み込む。
+    /// </summary>
+    private IEnumerator PassCharacterData()
+    {
+        if (SelectController.player_character_data != null && SelectController.enemy_character_data != null)
+        {
+            player.characterData = SelectController.player_character_data;
+            enemyPlayer.characterData = SelectController.enemy_character_data;
+        }
+        yield return null;
     }
 
 }

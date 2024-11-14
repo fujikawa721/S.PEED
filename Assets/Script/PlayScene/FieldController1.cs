@@ -22,15 +22,16 @@ public class FieldController : MonoBehaviour
     int posx_start = -190;
 
     private const int SPACE_OF_CARD = 380;
+    private const int NUMBER_OF_FIELD = 2;
 
     //カードデータ
     public struct CardData
     {
-        public int number_serial;
-        public int card_number;
-        public string card_mark;
-        public int card_number_under;
-        public int card_number_over;
+        public int serialNumber;
+        public int cardNumber;
+        public string cardMark;
+        public int cardNumberUnder;
+        public int cardNumberOver;
         public GameObject card;
         public Image cardImage;
 
@@ -50,96 +51,101 @@ public class FieldController : MonoBehaviour
         
     }
 
-    public IEnumerator ready_game()
+    public IEnumerator ReadyGame()
     {
         audioSource = GetComponent<AudioSource>();
         yield return null;
     }
 
-    //ドロー処理
-    public void draw_deck(int fieldcard_number,int number_serial)
+    /// <summary>
+    /// Deck.csから場札の何枚目か、カード番号（シリアルナンバー）を受けとりその情報をもとにオブジェクトを生成する。
+    /// </summary>
+    public void DrawDeck(int fieldNumber,int numberFromDeck)
     {
-        //number_serialは、1～52までの数字。Deck.csから受け取る。
-        fieldcards[fieldcard_number].number_serial = number_serial;
-        int posx = posx_start + fieldcard_number * SPACE_OF_CARD;
-        fieldcards[fieldcard_number].card = Instantiate(fieldcard, ParentObj, false);
-        fieldcards[fieldcard_number].card.transform.localPosition = new Vector3(posx, 0, -1);
+        fieldcards[fieldNumber].serialNumber = numberFromDeck;
+        int posx = posx_start + fieldNumber * SPACE_OF_CARD;
+        fieldcards[fieldNumber].card = Instantiate(fieldcard, ParentObj, false);
+        fieldcards[fieldNumber].card.transform.localPosition = new Vector3(posx, 0, -1);
 
-        CardImageUpdate(fieldcard_number, number_serial);
-        CardParameter(fieldcard_number, number_serial);
+        CardImageUpdate(fieldNumber, numberFromDeck);
+        CardParameter(fieldNumber, numberFromDeck);
 
     }
 
-    public void CardParameter(int fieldcard_number,int number_serial)
+    /// <summary>
+    /// カードの詳細情報を決定する。受け取ったカードナンバーをトランプの数字とマークに分解し、
+    /// 場札と入れ替えることができる数字１～１３を決定する。
+    /// </summary>
+    public void CardParameter(int fieldNumber,int serialNumber)
     {
-        //受け取ったシリアルナンバーを数字とマークに分解。
-        if (number_serial >= 1 && number_serial <= 13)
+        if (serialNumber >= 1 && serialNumber <= 13)
         {
-            fieldcards[fieldcard_number].card_number = number_serial;
-            fieldcards[fieldcard_number].card_mark = "C";
+            fieldcards[fieldNumber].cardNumber = serialNumber;
+            fieldcards[fieldNumber].cardMark = "C";
         }
-        else if (number_serial >= 14 && number_serial <= 26)
+        else if (serialNumber >= 14 && serialNumber <= 26)
         {
-            fieldcards[fieldcard_number].card_number = number_serial - 13;
-            fieldcards[fieldcard_number].card_mark = "D";
+            fieldcards[fieldNumber].cardNumber = serialNumber - 13;
+            fieldcards[fieldNumber].cardMark = "D";
         }
-        else if (number_serial >= 27 && number_serial <= 39)
+        else if (serialNumber >= 27 && serialNumber <= 39)
         {
-            fieldcards[fieldcard_number].card_number = number_serial - 26;
-            fieldcards[fieldcard_number].card_mark = "S";
+            fieldcards[fieldNumber].cardNumber = serialNumber - 26;
+            fieldcards[fieldNumber].cardMark = "S";
         }
-        else if (number_serial >= 40 && number_serial <= 52)
+        else if (serialNumber >= 40 && serialNumber <= 52)
         {
-            fieldcards[fieldcard_number].card_number = number_serial - 39;
-            fieldcards[fieldcard_number].card_mark = "H";
+            fieldcards[fieldNumber].cardNumber = serialNumber - 39;
+            fieldcards[fieldNumber].cardMark = "H";
         }
-        else if (number_serial == 53)
+        else if (serialNumber == 53)
         {
-            fieldcards[fieldcard_number].card_number = 0;
-            fieldcards[fieldcard_number].card_mark = "J";
+            fieldcards[fieldNumber].cardNumber = 0;
+            fieldcards[fieldNumber].cardMark = "J";
         }
         else
         {
-            Debug.Log(@$"ナンバーエラー:{number_serial}");
+            Debug.Log(@$"ナンバーエラー:{serialNumber}");
         }
 
-        //入れ替える時の数字を決定
-        if (fieldcards[fieldcard_number].card_number >= 2 && fieldcards[fieldcard_number].card_number <= 12)
+        
+        if (fieldcards[fieldNumber].cardNumber >= 2 && fieldcards[fieldNumber].cardNumber <= 12)
         {
-            fieldcards[fieldcard_number].card_number_under = fieldcards[fieldcard_number].card_number -1;
-            fieldcards[fieldcard_number].card_number_over = fieldcards[fieldcard_number].card_number + 1;
-        }else if (fieldcards[fieldcard_number].card_number == 1)
+            fieldcards[fieldNumber].cardNumberUnder = fieldcards[fieldNumber].cardNumber -1;
+            fieldcards[fieldNumber].cardNumberOver = fieldcards[fieldNumber].cardNumber + 1;
+        }else if (fieldcards[fieldNumber].cardNumber == 1)
         {
-            fieldcards[fieldcard_number].card_number_under = 13;
-            fieldcards[fieldcard_number].card_number_over = 2;
+            fieldcards[fieldNumber].cardNumberUnder = 13;
+            fieldcards[fieldNumber].cardNumberOver = 2;
         }
-        else if (fieldcards[fieldcard_number].card_number == 13)
+        else if (fieldcards[fieldNumber].cardNumber == 13)
         {
-            fieldcards[fieldcard_number].card_number_under = 12;
-            fieldcards[fieldcard_number].card_number_over = 1;
+            fieldcards[fieldNumber].cardNumberUnder = 12;
+            fieldcards[fieldNumber].cardNumberOver = 1;
         }
 
     }
 
-    public void CardImageUpdate(int fieldcard_number, int number_serial)
+    public void CardImageUpdate(int fieldNumber, int serialNumber)
     {
-        //カードの画像を更新する関数
-        fieldcards[fieldcard_number].cardImage = fieldcards[fieldcard_number].card.GetComponent<Image>();
-        fieldcards[fieldcard_number].cardImage.sprite = Resources.Load<Sprite>("CardImages/" + number_serial.ToString());
+        fieldcards[fieldNumber].cardImage = fieldcards[fieldNumber].card.GetComponent<Image>();
+        fieldcards[fieldNumber].cardImage.sprite = Resources.Load<Sprite>("CardImages/" + serialNumber.ToString());
     }
 
-    //手札のカードと入れ替える関数
-    public int judge_putcard_center(int hand_card_number,string hand_card_mark,int hand_number_serial, GameObject hand_card)
+    
+    /// <summary>
+    /// 手札からカード情報を受け取り、場札と入れ替える処理。
+    /// </summary>
+    public int PutCardField(int handCardNumber,string handCardMark,int handSerialNumber, GameObject handCard)
     {
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < NUMBER_OF_FIELD; i++)
         {
-            if (hand_card_number == fieldcards[i].card_number_under || hand_card_number == fieldcards[i].card_number_over)
+            if (handCardNumber == fieldcards[i].cardNumberUnder || handCardNumber == fieldcards[i].cardNumberOver)
             {
-                StartCoroutine(animate_putcard_center(i,hand_card));
-                fieldcards[i].number_serial = hand_number_serial;
-                CardImageUpdate(i, fieldcards[i].number_serial);
-                CardParameter(i, fieldcards[i].number_serial);
-                
+                StartCoroutine(AnimatePutCardField(i,handCard));
+                fieldcards[i].serialNumber = handSerialNumber;
+                CardImageUpdate(i, fieldcards[i].serialNumber);
+                CardParameter(i, fieldcards[i].serialNumber);
                 return 1;
             }
         }
@@ -147,11 +153,14 @@ public class FieldController : MonoBehaviour
         return 0;
     }
 
-    public int check_hand_action(int hand_card_number, string hand_card_mark)
+    /// <summary>
+    /// 場札に出すカードが手札にあるか確認する処理。
+    /// </summary>
+    public int JudgeCanPutCard(int handCardNumber)
     {
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < NUMBER_OF_FIELD; i++)
         {
-            if (hand_card_number == fieldcards[i].card_number_under || hand_card_number == fieldcards[i].card_number_over)
+            if (handCardNumber == fieldcards[i].cardNumberUnder || handCardNumber == fieldcards[i].cardNumberOver)
             {
                 return 1;
             }
@@ -160,26 +169,25 @@ public class FieldController : MonoBehaviour
     }
 
 
-    public IEnumerator animate_putcard_center(int center_number, GameObject hand_card)
+    public IEnumerator AnimatePutCardField(int fieldNumber, GameObject handCard)
     {
-        int posx = posx_start + center_number * SPACE_OF_CARD;
-        hand_card.transform.SetParent(ParentObj);
-        hand_card.transform.DOLocalMove(new Vector3(posx, 0, 0), 0.1f);
+        int posx = posx_start + fieldNumber * SPACE_OF_CARD;
+        handCard.transform.SetParent(ParentObj);
+        handCard.transform.DOLocalMove(new Vector3(posx, 0, 0), 0.1f);
         yield return new WaitForSeconds(0.2f);
-        Destroy(hand_card);
+        Destroy(handCard);
     }
 
-    public void play_se_speed()
+    public void PlaySeSpeed()
     {
         audioSource.clip = speed;
         audioSource.Play();
     }
 
-    public void play_se_whistle()
+    public void PlaySeWhistle()
     {
         audioSource.clip = whistle;
         audioSource.Play();
-        Debug.Log(@$"ホイッスルSE");
     }
 
     

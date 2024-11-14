@@ -334,6 +334,7 @@ GameObject:
   m_Component:
   - component: {fileID: 232547183}
   - component: {fileID: 232547182}
+  - component: {fileID: 232547184}
   m_Layer: 0
   m_Name: background
   m_TagString: Untagged
@@ -408,6 +409,102 @@ Transform:
   m_Children: []
   m_Father: {fileID: 611706867}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &232547184
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 232547181}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: e147ae88f5480634ba33c504507c457c, type: 3}
+  m_PlayOnAwake: 1
+  m_Volume: 0.05
+  m_Pitch: 1
+  Loop: 1
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &265707925
 GameObject:
   m_ObjectHideFlags: 0
@@ -728,8 +825,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -8.834717, y: 0.040618896}
-  m_SizeDelta: {x: 85.39, y: 112.04}
+  m_AnchoredPosition: {x: -8.8223, y: 0.040618896}
+  m_SizeDelta: {x: 63.7117, y: 112.04}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &299317976
 MonoBehaviour:
@@ -751,8 +848,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10917, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: ebea487a9c371d8499b724cc3756f216, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -2140,8 +2237,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -8.834717, y: 0.040618896}
-  m_SizeDelta: {x: 85.39, y: 112.04}
+  m_AnchoredPosition: {x: -8.8347, y: 0.040618896}
+  m_SizeDelta: {x: 63.4441, y: 112.04}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1487887039
 GameObject:
@@ -2178,8 +2275,8 @@ MonoBehaviour:
   sp_info_text: {fileID: 1727665573}
   chara_obj: {fileID: 1428065800}
   chara_img: {fileID: 0}
-  argyle_img: {fileID: 21300000, guid: e488055ec9bf3244b98bade919f15b7e, type: 3}
-  kokoro_img: {fileID: 21300000, guid: ebea487a9c371d8499b724cc3756f216, type: 3}
+  argyle_img: {fileID: 21300000, guid: 0b8fe747cc558a647802447277262960, type: 3}
+  kokoro_img: {fileID: 21300000, guid: 7d7b4326a623bae4982b10b8001847d5, type: 3}
   mark_obj: {fileID: 290735838}
   mark_img: {fileID: 0}
   mark_clover: {fileID: 21300000, guid: 8710108615ff40e4b8ff12c4bf96c1c0, type: 3}
@@ -2852,6 +2949,7 @@ MonoBehaviour:
   enemyCharacter: {fileID: 1487887040}
   ready_button: {fileID: 1079919327}
   load_display: {fileID: 1629258874}
+  cursor: {fileID: 8300000, guid: f280bc4f86486804884332082fcfa299, type: 3}
   select: {fileID: 8300000, guid: 5632dc8b4495f314b97f52812ef33e05, type: 3}
   back: {fileID: 8300000, guid: 0279efa8ddae2194ebc60a13666d3519, type: 3}
   gameready: {fileID: 8300000, guid: e9a6263adaf3ebd4da9d25a7a41bfc0e, type: 3}
@@ -3185,8 +3283,8 @@ MonoBehaviour:
   sp_info_text: {fileID: 1986511437}
   chara_obj: {fileID: 299317974}
   chara_img: {fileID: 0}
-  argyle_img: {fileID: 21300000, guid: e488055ec9bf3244b98bade919f15b7e, type: 3}
-  kokoro_img: {fileID: 21300000, guid: ebea487a9c371d8499b724cc3756f216, type: 3}
+  argyle_img: {fileID: 21300000, guid: 0b8fe747cc558a647802447277262960, type: 3}
+  kokoro_img: {fileID: 21300000, guid: 7d7b4326a623bae4982b10b8001847d5, type: 3}
   mark_obj: {fileID: 265707925}
   mark_img: {fileID: 0}
   mark_clover: {fileID: 21300000, guid: 8710108615ff40e4b8ff12c4bf96c1c0, type: 3}

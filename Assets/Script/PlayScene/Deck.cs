@@ -7,16 +7,14 @@ using TMPro;
 
 public class Deck : MonoBehaviour, IPointerClickHandler
 {
-    [SerializeField] PlayerHandController playerHand;
-    [SerializeField] FieldController Field;
-    [SerializeField] TextMeshProUGUI decks_zan_Text;
-    [SerializeField] Player player_script;
-    [SerializeField] Image deck_img;
-
+    [SerializeField] FieldController field;
+    [SerializeField] TextMeshProUGUI restDecksText;
+    [SerializeField] Player player;
+    [SerializeField] PlayerHandController playerHandController;
 
 
     AudioSource audioSource;
-    public AudioClip deck_max;
+    public AudioClip deckMax;
 
 
     private const int NUMBER_OF_DECK = 26;
@@ -25,29 +23,28 @@ public class Deck : MonoBehaviour, IPointerClickHandler
     private const float SPEED_DRAWFIELD = 0.2f;
 
     private int[] decks = new int[NUMBER_OF_DECK];
-    private int decks_zan = NUMBER_OF_DECK;
+    private int restDeck = NUMBER_OF_DECK;
 
-
-    // Start is called before the first frame update
-    void Start()
+    public void Update()
     {
-
+        restDecksText.text = @$"{restDeck}";
     }
 
-    // Update is called once per frame
-    void Update()
+
+    public IEnumerator ReadyGame()
     {
-        
+        audioSource = GetComponent<AudioSource>();
+        yield return null;
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        Debug.Log(@$"SPポイント{player_script.now_sp_point}");
+        Debug.Log(@$"SPポイント{player.nowSpPoint}");
 
-        if (player_script.can_special == true)
+        if (player.canDoSpecial == true)
         {
             Debug.Log(@$"スペシャル発動！");
-            StartCoroutine(player_script.check_special_type());
+            StartCoroutine(player.DoSpecial());
             transform.position -= Vector3.up * 0.3f;
             transform.localScale = Vector3.one * 1.0f;
         }
@@ -59,7 +56,7 @@ public class Deck : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerEnter()
     {
-        if (player_script.can_special == true)
+        if (player.canDoSpecial == true)
         {
             transform.position += Vector3.up * 0.3f;
             transform.localScale = Vector3.one * 1.1f;
@@ -68,7 +65,7 @@ public class Deck : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerExit()
     {
-        if (player_script.can_special == true)
+        if (player.canDoSpecial == true)
         {
             transform.position -= Vector3.up * 0.3f;
             transform.localScale = Vector3.one * 1.0f;
@@ -77,95 +74,83 @@ public class Deck : MonoBehaviour, IPointerClickHandler
     }
 
 
-
-    public void update_deck_number()
+    public IEnumerator MakePlayerDeck()
     {
-        decks_zan_Text.text = @$"{decks_zan}";
-    }
-
-    public IEnumerator make_playerdeck()
-    {
-        play_se_deck_max();
-        decks_zan = NUMBER_OF_DECK;
-        make_deck_serial_number();
-        shuffle_deck();
+        PlaySeDeckMax();
+        restDeck = NUMBER_OF_DECK;
+        MakeDeckSerialNumber();
+        ShuffleDeck();
         yield return null;
     }
 
-
-    void make_deck_serial_number()
+    /// <summary>
+    /// デッキのすべてのカードそれぞれに連番の数値を割り振る。
+    /// </summary>
+    private void MakeDeckSerialNumber()
     {
         for (int i = 0; i < NUMBER_OF_DECK; i++) {
             decks[i] = i+1;
         }
     }
 
-    void shuffle_deck()
+    /// <summary>
+    /// 乱数を使ってデッキをシャッフルする。
+    /// </summary>
+    private void ShuffleDeck()
     {
-        Debug.Log(@$"デッキ枚数は{decks_zan}、シャッフル処理を開始");
-        for (var i = decks_zan-1; i >= 0; i--)
+        for (var i = restDeck-1; i >= 0; i--)
         {
             var j = Random.Range(0, NUMBER_OF_DECK);
             var tmp = decks[i];
             decks[i] = decks[j];
             decks[j] = tmp;           
         }
-
     }
 
-    //ゲーム開始時の手札生成処理
-    public IEnumerator make_playerhand()
+    /// <summary>
+    /// ゲーム開始時にGameControllerから呼び出される手札生成処理。
+    /// </summary>
+    public IEnumerator MakePlayerHand()
     {
         for (var i = 0; i < NUMBER_OF_HAND; i++)
         {
-            Debug.Log(@$"手札生成処理を開始");
-            decks_zan--;
-            playerHand.DrawHand(decks[decks_zan]);
+            restDeck--;
+            playerHandController.DrawHand(decks[restDeck]);
             yield return new WaitForSeconds(SPEED_DRAWHAND);
         }
-        yield return new WaitForSeconds(2.0f);//手札生成処理後の時間
+        yield return null;
+        //yield return new WaitForSeconds(2.0f);
     }
 
-    public IEnumerator make_field(int fieldcard_number)
+    public IEnumerator MakeField(int fieldcardNumber)
     {
-        if (decks_zan < 1)
+        if (restDeck < 1)
         {
-            yield return StartCoroutine(make_playerdeck());
+            yield return StartCoroutine(MakePlayerDeck());
         }
-        Debug.Log(@$"場札生成処理を開始");
-            decks_zan--;
-            Field.draw_deck(fieldcard_number, decks[decks_zan]);
-            yield return new WaitForSeconds(SPEED_DRAWFIELD);
+        restDeck--;
+        field.DrawDeck(fieldcardNumber, decks[restDeck]);
+        yield return new WaitForSeconds(SPEED_DRAWFIELD);
     }
 
 
-    public IEnumerator Draw_One()
+    public IEnumerator DrawOne()
     {
-        if (decks_zan < 1)
+        if (restDeck < 1)
         {
             
-            yield return StartCoroutine(make_playerdeck());
+            yield return StartCoroutine(MakePlayerDeck());
         }
-        Debug.Log(@$"ドロー処理を開始");
-        decks_zan--;
-        playerHand.DrawHand(decks[decks_zan]);
+        restDeck--;
+        playerHandController.DrawHand(decks[restDeck]);
         yield return new WaitForSeconds(SPEED_DRAWHAND);
     
     }
+    
 
-
-
-
-    //★★効果音★★
-    public IEnumerator ready_game()
+    public void PlaySeDeckMax()
     {
-        audioSource = GetComponent<AudioSource>();
-        yield return null;
-    }
-
-    public void play_se_deck_max()
-    {
-        audioSource.clip = deck_max;
+        audioSource.clip = deckMax;
         audioSource.Play();
     }
 

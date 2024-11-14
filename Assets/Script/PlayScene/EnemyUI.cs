@@ -5,7 +5,7 @@ using UnityEngine;
 public class EnemyUI : MonoBehaviour
 {
     [SerializeField] GameController gameController;
-    [SerializeField] EnemyHandController enemyHandController;
+    [SerializeField] PlayerHandController enemyHandController;
     
     public const float ACTION_SPEED = 2.0f;
 
@@ -21,25 +21,22 @@ public class EnemyUI : MonoBehaviour
 
     }
 
-    public IEnumerator enemy_action()
+    public IEnumerator ActionEnemy()
     {
-        Debug.Log(@$"敵UIを起動");
-        while(gameController.end_game_flg == false)
+        Debug.Log(@$"敵アクション開始");
+        while (gameController.endGameFlg == false)
         {
-            if (gameController.end_game_flg == true)
+            if (gameController.endGameFlg == true)
             {
                 break;
             }
 
-            if (gameController.enemy_action_flg == true)
+            if (gameController.canEnemyAction == true)
             {
-                Debug.Log(@$"敵プレイヤーが手札を場札に置きます");
-                enemyHandController.put_handcard_center();
-                enemyHandController.do_special();
+                enemyHandController.DoEnemyAction();
                 yield return new WaitForSeconds(ACTION_SPEED);
             }
             else{
-                Debug.Log(@$"敵プレイヤーは置けるカードがありません");
                 yield return new WaitForSeconds(ACTION_SPEED);
             }
 

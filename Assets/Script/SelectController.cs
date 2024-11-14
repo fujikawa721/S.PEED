@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class SelectController : MonoBehaviour
 {
+    //PlaySceneのGameControllerから呼び出される。
     public static CharacterData player_character_data;
     public static CharacterData enemy_character_data;
 
@@ -17,6 +18,7 @@ public class SelectController : MonoBehaviour
     private int selection_status = 1;
 
     AudioSource audioSource;
+    public AudioClip cursor;
     public AudioClip select;
     public AudioClip back;
     public AudioClip gameready;
@@ -37,6 +39,7 @@ public class SelectController : MonoBehaviour
 
     public IEnumerator pass_character_data(CharacterData chara_data)
     {
+        play_se_cursor();
         switch (selection_status)
         {
             case 1:
@@ -58,8 +61,8 @@ public class SelectController : MonoBehaviour
     //カーソルを動かさず同じキャラクターをクリックすると2Pプレイヤーに画像が表示されないため、PointerEnterと同じ処理を一度実行する。
     public IEnumerator select_character(CharacterData chara_data)
     {
-        play_se_select();
         StartCoroutine(pass_character_data(chara_data));
+        play_se_select();
         switch (selection_status)
         {
             case 1:
@@ -108,6 +111,13 @@ public class SelectController : MonoBehaviour
         yield return new WaitForSeconds(LOAD_TIME);
         SceneManager.LoadScene("Play");
         yield return null;
+    }
+
+    //★★★★効果音に関する処理★★★★
+    public void play_se_cursor()
+    {
+        audioSource.clip = cursor;
+        audioSource.Play();
     }
 
     public void play_se_select()

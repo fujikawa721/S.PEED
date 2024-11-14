@@ -6,8 +6,9 @@ using UnityEngine.EventSystems;
 
 public class Card : MonoBehaviour, IPointerClickHandler
 {
-
-    public int hand_number;
+    public delegate void ClickCard(int handNumber);
+    private ClickCard clickCardCallBack;
+    private int handNumber;
 
 
     // Start is called before the first frame update
@@ -22,18 +23,17 @@ public class Card : MonoBehaviour, IPointerClickHandler
         
     }
 
-
-    public void CardParameter(int playerhand_number)
+    //PlayerHandConrtollerから呼び出される。
+    //何番目の手札か、カードをクリックした時実行するメソッド（コールバック）を受け取る。
+    public void CardParameter(int playerHandNumber, ClickCard clickCard)
     {
-        hand_number = playerhand_number;
-
+        handNumber = playerHandNumber;
+        clickCardCallBack = clickCard;
     }
 
 
     public void OnPointerClick(PointerEventData eventData) {
-        Debug.Log(@$"{hand_number}目がクリックされた");
-        GameObject PlayerHand = GameObject.Find("PlayerHand");
-        PlayerHand.GetComponent<PlayerHandController>().put_card_field(hand_number);
+        clickCardCallBack(handNumber);
     }
 
     public void OnPointerEnter()
