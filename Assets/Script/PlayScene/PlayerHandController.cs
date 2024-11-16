@@ -18,13 +18,19 @@ public class PlayerHandController : MonoBehaviour
     private Image cardImage;
     private Card cardScript;
 
-    //Prefabオブジェクトの親オブジェクトへの参照を保持する
+    
     public Transform ParentObj;
 
     private int drawPositionDefault = -620;
+    
+    //プレイヤーの手札は【5枚】
     private const int NUMBER_OF_HAND = 5;
+
+    //【手札のカード同士の間隔は横【310】px】
     private const int SPACE_OF_CARD = 310;
     
+    //ドローにかかる速度は【0.1f】
+    private const float SPEED_DRAWHAND = 0.1f;
 
     public struct CardData
     {
@@ -57,30 +63,15 @@ public class PlayerHandController : MonoBehaviour
     }
 
     /// <summary>
-    /// Deck.csから1～53のシリアルナンバーを受け取る。0はカードがない状態を表す。
-    /// 手札の状況をチェックし、空いてる場所にシリアルナンバーを代入する。
+    /// ゲーム開始時にGameControllerから呼び出される手札生成処理。
     /// </summary>
-    public void DrawHand(int deckNumberSerial)
+    public IEnumerator MakePlayerHand()
     {
-        int playerHandNumber = 0;
-        if (deckNumberSerial > 0)
+        for (var i = 0; i < NUMBER_OF_HAND; i++)
         {
-            for (int i = 0; i < NUMBER_OF_HAND; i++)
-            {
-                if (playerHands[i].serialNumber == 0)
-                {
-                    playerHands[i].serialNumber = deckNumberSerial;
-                    playerHandNumber = i;
-                    break;
-                }
-            }
-            CheckDrawPosition(playerHandNumber);
-            ChangeCarddata(playerHandNumber, playerHands[playerHandNumber].serialNumber);
+            yield return StartCoroutine(DrawHand());
         }
-        else
-        {
-            Debug.Log(@$"PlayerHandController.cs 山札が空です");
-        }
+        yield return null;
     }
 
 
@@ -100,24 +91,6 @@ public class PlayerHandController : MonoBehaviour
             //お手付きの場合コンボをリセットする処理
         }
     }
-
-    /// <summary>
-    /// エネミーUIが行動する処理。手札を場札に置く処理の後、SPが使用可能か確認する。
-    /// </summary>
-    public void DoEnemyAction()
-    {
-        for (int i = 0; i < NUMBER_OF_HAND; i++)
-        {
-            int judgeResult = fieldController.JudgeCanPutCard(playerHands[i].cardNumber);
-            if (judgeResult == 1)
-            {
-                PutCardField(i);
-                break;
-            }
-        }
-        DoSpecial();
-    }
-
 
     /// <summary>
     /// 場札に置くことができるカードがプレイヤーの手札に存在するか確認する。
@@ -146,6 +119,53 @@ public class PlayerHandController : MonoBehaviour
     }
 
     /// <summary>
+    /// エネミーUIが行動する処理。手札を場札に置く処理の後、SPが使用可能か確認する。
+    /// </summary>
+    public IEnumerator DoEnemyAction()
+    {
+        for (int i = 0; i < NUMBER_OF_HAND; i++)
+        {
+            int judgeResult = fieldController.JudgeCanPutCard(playerHands[i].cardNumber);
+            if (judgeResult == 1)
+            {
+                PutCardField(i);
+                break;
+            }
+        }
+        yield return StartCoroutine(DoSpecial());
+    }
+
+
+    /// <summary>
+    /// Deck.csから1～53のシリアルナンバーを受け取る。0はカードがない状態を表す。
+    /// 手札の状況をチェックし、空いてる場所にシリアルナンバーを代入する。
+    /// </summary>
+    private IEnumerator DrawHand()
+    {
+        int deckSerialNumber = deck.DrawOne();
+        yield return new WaitForSeconds(SPEED_DRAWHAND);
+        int playerHandNumber = 0;
+        if (deckSerialNumber > 0)
+        {
+            for (int i = 0; i < NUMBER_OF_HAND; i++)
+            {
+                if (playerHands[i].serialNumber == 0)
+                {
+                    playerHands[i].serialNumber = deckSerialNumber;
+                    playerHandNumber = i;
+                    break;
+                }
+            }
+            CheckDrawPosition(playerHandNumber);
+            ChangeCarddata(playerHandNumber, playerHands[playerHandNumber].serialNumber);
+        }
+        else
+        {
+            Debug.Log(@$"PlayerHandController.cs 山札が空です");
+        }
+    }
+
+    /// <summary>
     /// 手札から場札にカードを出す処理。
     /// </summary>
     private void PutCardField(int handNumber)
@@ -154,7 +174,7 @@ public class PlayerHandController : MonoBehaviour
         player.AttackEnemy();
         fieldController.PutCardField(playerHands[handNumber].cardNumber, playerHands[handNumber].cardMark, playerHands[handNumber].serialNumber, playerHands[handNumber].cardObject);
         playerHands[handNumber].serialNumber = 0;
-        StartCoroutine(deck.DrawOne());
+        StartCoroutine(DrawHand());
     }
 
     /// <summary>
@@ -168,11 +188,11 @@ public class PlayerHandController : MonoBehaviour
         }
     }
 
-    private  void DoSpecial()
+    private  IEnumerator DoSpecial()
     {
         if (player.canDoSpecial == true)
         {
-            StartCoroutine(player.DoSpecial());
+            yield return StartCoroutine(player.DoSpecial());
         }
     }
 

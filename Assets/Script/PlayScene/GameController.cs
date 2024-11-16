@@ -12,7 +12,7 @@ public class GameController : MonoBehaviour
     
     
     [SerializeField] Deck deck;
-    [SerializeField] EnemyDeck enemyDeck;
+    [SerializeField] Deck enemyDeck;
     [SerializeField] EnemyUI enemyUI;
     [SerializeField] FieldController fieldController;
     [SerializeField] Player player;
@@ -71,16 +71,29 @@ public class GameController : MonoBehaviour
         gameMessageText.text = @$"";
     }
 
+    public void PauseGamePlaying()
+    {
+        canPlayNow = false;
+        noactionCurtain.SetActive(true);
+    }
+
+    public void ReStartGamePlaying()
+    {
+        canPlayNow = true;
+        noactionCurtain.SetActive(false);
+    }
+
+
     private IEnumerator ReadyPlayer()
     {
         yield return StartCoroutine(deck.MakePlayerDeck());
-        yield return StartCoroutine(deck.MakePlayerHand());  
+        yield return StartCoroutine(playerHandController.MakePlayerHand());  
     }
 
     private IEnumerator ReadyEnemy()
     {
         yield return StartCoroutine(enemyDeck.MakePlayerDeck());
-        yield return StartCoroutine(enemyDeck.MakePlayerHand());
+        yield return StartCoroutine(enemyHandController.MakePlayerHand());
     }
 
 
@@ -110,6 +123,8 @@ public class GameController : MonoBehaviour
 
             if (canPlayerAction == false && canEnemyAction == false)
             {
+                canPlayNow = false;
+                yield return new WaitForSeconds(1.0f);
                 yield return StartCoroutine(Speed());
             }
         }
@@ -129,8 +144,7 @@ public class GameController : MonoBehaviour
     public IEnumerator Speed()
     {
         fieldController.PlaySeWhistle();
-        canPlayNow = false;
-        noactionCurtain.SetActive(true);
+        PauseGamePlaying();
         gameMessage.SetActive(true);
         gameMessageText.text = @$"仕切り直し";
         playerActionText.text = @$"場札をリセットします。";
@@ -147,10 +161,9 @@ public class GameController : MonoBehaviour
         fieldController.PlaySeSpeed();
         StartCoroutine(deck.MakeField(0));
         StartCoroutine(enemyDeck.MakeField(1));
-        noactionCurtain.SetActive(false);
         gameMessage.SetActive(false);
-        canPlayNow = true;
         gameMessageText.text = @$"";
+        ReStartGamePlaying();
 
         yield return null;
     }

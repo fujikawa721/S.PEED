@@ -27,9 +27,9 @@ public class SPGauge : MonoBehaviour
                     .DOFillAmount(value, DURATION / 2f)
                     .SetDelay(0.5f);
             });
-        transform.DOShakePosition(
-            DURATION / 2f,
-            STRENGTH, VIBRATE);
+        //transform.DOShakePosition(
+        //    DURATION / 2f,
+        //    STRENGTH, VIBRATE);
 
         nowSpGauge = value;
     }
