@@ -5,24 +5,14 @@ using UnityEngine;
 public class EnemyUI : MonoBehaviour
 {
     [SerializeField] GameController gameController;
-    [SerializeField] PlayerHandController enemyHandController;
+    [SerializeField] Player enemy;
     
     public const float ACTION_SPEED = 2.0f;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 
     /// <summary>
     /// CPUのAI行動。ゲーム終了フラグがtrueになるまで繰り返され、ゲーム中断フラグが経っていると行動を行わない。
+    /// プレイ可能フラグとエネミー行動可能フラグが立っている時に行動を行う。
     /// </summary>
     public IEnumerator ActionEnemy()
     {
@@ -39,7 +29,7 @@ public class EnemyUI : MonoBehaviour
             {
                 if (gameController.canEnemyAction == true)
                 {
-                    yield return StartCoroutine(enemyHandController.DoEnemyAction());   
+                    yield return StartCoroutine(enemy.DoEnemyAction());
                 }
             }
 

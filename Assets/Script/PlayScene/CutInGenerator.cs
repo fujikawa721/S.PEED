@@ -8,57 +8,34 @@ using TMPro;
 public class CutInGenerator : MonoBehaviour
 {
     [SerializeField] private GameObject cutInObject;
-
+    
     //カットインのキャラクター画像を読み込み
-    [SerializeField] public Sprite cutIn001;
-    [SerializeField] public Sprite cutIn002;
     [SerializeField] private Image cutInImg;
 
 
     //カットインのアニメーション用のオブジェクト読み込み
-    [SerializeField] private GameObject textTopObject;
     [SerializeField] private GameObject textSPNameObject;
     [SerializeField] private GameObject textSPInfoObject;
-    [SerializeField] TextMeshProUGUI textTop;
-    [SerializeField] TextMeshProUGUI textBottom;
-    [SerializeField] TextMeshProUGUI textSpInfo;
+    [SerializeField] TextMeshProUGUI spNameText;
+    [SerializeField] TextMeshProUGUI spInfoText;
 
 
     private const float CUTIN_SPEED = 0.5f;//カットインが表示される速度
     private const float CUTIN_TIME = 2.5f;
-    private string specialName;
 
     private Tween tween1;
 
     
 
-    public void ReadyGame()
+    public void ReadyGame(CharacterData characterData)
     {
         cutInObject.SetActive(false);
+        cutInImg.DOFillAmount(0f, 0);
+        cutInImg.sprite = characterData.specialCutInImage;
+        spNameText.text = @$"{characterData.spName}";
+        spInfoText.text = @$"{characterData.spInfo}";
     }
 
-    /// <summary>
-    /// ゲーム開始時にPlayer.csに呼び出される。
-    /// </summary>
-    public void CheckCutInImg(int specialId)
-    {
-        cutInImg.DOFillAmount(0f, 0);
-        switch (specialId)
-        {
-            case 1:
-                cutInImg.sprite = cutIn001;
-                specialName = "火閃斬";
-                break;
-            case 2:
-                cutInImg.sprite = cutIn002;
-                specialName = "いやしの歌";
-                break;
-            default:
-                Debug.Log(@$"スペシャルIDにエラーがあります");
-                break;
-        }
-        textBottom.text = specialName;
-    }
 
     /// <summary>
     /// カットインのアニメーション。SPを使う度呼び出される。
@@ -68,9 +45,8 @@ public class CutInGenerator : MonoBehaviour
     {
         cutInObject.SetActive(true);
         StartCoroutine(AnimateCutInImage());
-        StartCoroutine(AnimateTextTop());
-        StartCoroutine(AnimateSPName());
-        StartCoroutine(AnimateSPInfo());
+        StartCoroutine(AnimateSpName());
+        StartCoroutine(AnimateSpInfo());
         yield return new WaitForSeconds(CUTIN_TIME);
         cutInObject.SetActive(false);
     }
@@ -83,16 +59,7 @@ public class CutInGenerator : MonoBehaviour
         });
         yield return null;
     }
-
-    public IEnumerator AnimateTextTop()
-    {
-        textTopObject.transform.DOLocalMoveX(-650, CUTIN_SPEED).From().OnComplete(() =>
-        {
-            //textTopObject.transform.DOLocalMoveX(650, CUTIN_SPEED).From().SetRelative(true).SetDelay(2);
-        });
-        yield return null;
-    }
-    public IEnumerator AnimateSPName()
+    public IEnumerator AnimateSpName()
     {
         textSPNameObject.transform.DOLocalMoveX(-1000, CUTIN_SPEED).From().OnComplete(() =>
         {
@@ -101,7 +68,7 @@ public class CutInGenerator : MonoBehaviour
         yield return null;
     }
 
-    public IEnumerator AnimateSPInfo()
+    public IEnumerator AnimateSpInfo()
     {
         textSPInfoObject.transform.DOLocalMoveX(-1000, CUTIN_SPEED).From().OnComplete(() =>
         {

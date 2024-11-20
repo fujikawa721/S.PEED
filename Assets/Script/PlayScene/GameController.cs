@@ -124,7 +124,6 @@ public class GameController : MonoBehaviour
             if (canPlayerAction == false && canEnemyAction == false)
             {
                 canPlayNow = false;
-                yield return new WaitForSeconds(1.0f);
                 yield return StartCoroutine(Speed());
             }
         }
@@ -143,6 +142,7 @@ public class GameController : MonoBehaviour
     /// </summary>
     public IEnumerator Speed()
     {
+        yield return new WaitForSeconds(1.0f);
         fieldController.PlaySeWhistle();
         PauseGamePlaying();
         gameMessage.SetActive(true);
@@ -152,7 +152,7 @@ public class GameController : MonoBehaviour
 
         gameMessageText.text = @$"スピー　 ";
         gameGuidance.play_se_voice_spee();
-        yield return new WaitForSeconds(2.0f);
+        yield return new WaitForSeconds(1.0f);
 
         gameMessageText.text = @$"スピード!";
         gameGuidance.play_se_voice_do();
@@ -192,9 +192,6 @@ public class GameController : MonoBehaviour
         yield return StartCoroutine(fieldController.ReadyGame());
         yield return StartCoroutine(deck.ReadyGame());
         yield return StartCoroutine(enemyDeck.ReadyGame());
-
-        yield return StartCoroutine(playerHandController.ReadyGame());
-        yield return StartCoroutine(enemyHandController.ReadyGame()); 
         
 
     }

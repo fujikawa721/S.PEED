@@ -14,6 +14,8 @@ public class SelectController : MonoBehaviour
     [SerializeField] GameObject ready_button;
     [SerializeField] GameObject load_display;
 
+    [SerializeField] private CharacterData nullCharacterData;
+
     private const float LOAD_TIME = 3.0f;
     private int selection_status = 1;
 
@@ -92,9 +94,11 @@ public class SelectController : MonoBehaviour
                 break;
             case 2:
                 selection_status = 1;
+                playerCharacter.receive_data(nullCharacterData);
                 break;
             case 3:
                 selection_status = 2;
+                enemyCharacter.receive_data(nullCharacterData);
                 ready_button.SetActive(false);
                 break;
             default:

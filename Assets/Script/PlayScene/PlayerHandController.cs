@@ -6,12 +6,14 @@ using DG.Tweening;
 
 public class PlayerHandController : MonoBehaviour
 {
-    AudioSource audioSource;
-    public AudioClip draw;
-
     [SerializeField] private Deck deck;
     [SerializeField] private FieldController fieldController;
-    [SerializeField] private Player player;
+    [SerializeField] private PlaySeHand playSeHand;
+    private string playerElementMark;
+
+    // 場札にカードを置いた際のコールバック処理
+    public delegate void CardPut(int handNumber);
+    private CardPut cardPutCallBack;
 
     //トランプのプレハブ
     public GameObject cardPrefab;
@@ -41,13 +43,15 @@ public class PlayerHandController : MonoBehaviour
         public Image cardImage;
     }
 
+
     public CardData[] playerHands = new CardData[NUMBER_OF_HAND];
 
     
 
-    public IEnumerator ReadyGame()
+    public IEnumerator ReadyGame(CardPut putCardAction)
     {
-        audioSource = GetComponent<AudioSource>();
+        yield return StartCoroutine(playSeHand.ReadyAudio());
+        cardPutCallBack = putCardAction;
         ClearHand();
         yield return null;
 
@@ -121,7 +125,7 @@ public class PlayerHandController : MonoBehaviour
     /// <summary>
     /// エネミーUIが行動する処理。手札を場札に置く処理の後、SPが使用可能か確認する。
     /// </summary>
-    public IEnumerator DoEnemyAction()
+    public IEnumerator PutCardOfEnemy()
     {
         for (int i = 0; i < NUMBER_OF_HAND; i++)
         {
@@ -132,7 +136,7 @@ public class PlayerHandController : MonoBehaviour
                 break;
             }
         }
-        yield return StartCoroutine(DoSpecial());
+        yield return null;
     }
 
 
@@ -170,30 +174,23 @@ public class PlayerHandController : MonoBehaviour
     /// </summary>
     private void PutCardField(int handNumber)
     {
-        JudgePlusSpPoint(handNumber);
-        player.AttackEnemy();
+        cardPutCallBack(handNumber);
         fieldController.PutCardField(playerHands[handNumber].cardNumber, playerHands[handNumber].cardMark, playerHands[handNumber].serialNumber, playerHands[handNumber].cardObject);
         playerHands[handNumber].serialNumber = 0;
         StartCoroutine(DrawHand());
     }
 
     /// <summary>
-    /// SPゲージ増加処理。キャラクターの属性マークと出したカードのマークが同一であればSPゲージを増加させる。
+    /// 手札から場札に出したカードが属性カードか判定する。
+    /// キャラクターの属性マークと出したカードのマークが同一であればSPゲージを増加させる。
     /// </summary>
-    private void JudgePlusSpPoint(int handNumber)
+    public bool CheckElement(int handNumber,string playerElementMark)
     {
-        if (playerHands[handNumber].cardMark == player.characterData.element_mark)
+        if (playerHands[handNumber].cardMark == playerElementMark)
         {
-            player.PlusSpGauge();
+            return true;
         }
-    }
-
-    private  IEnumerator DoSpecial()
-    {
-        if (player.canDoSpecial == true)
-        {
-            yield return StartCoroutine(player.DoSpecial());
-        }
+        return false;
     }
 
     /// <summary>
@@ -214,7 +211,7 @@ public class PlayerHandController : MonoBehaviour
         cardImage = playerHands[playerhandNumber].cardObject.GetComponent<Image>();
         cardScript = playerHands[playerhandNumber].cardObject.GetComponent<Card>();
 
-        PlaySeDraw();
+        playSeHand.PlaySeDraw();
         cardImage.sprite = Resources.Load<Sprite>("CardImages/" + serialNumber.ToString());
 
         DecomposeCardParameter(playerhandNumber, serialNumber);
@@ -258,13 +255,5 @@ public class PlayerHandController : MonoBehaviour
         }
     }
 
-    
-
-    //★効果音再生
-    public void PlaySeDraw()
-    {
-        audioSource.clip = draw;
-        audioSource.Play();
-    }
 
 }

@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 2558597068831444e846aadf52595cf0
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - spPointGet: {fileID: 8300000, guid: 61bd39262c5fba64aaeec950a8f46823, type: 3}
+  - spgaugeMax: {fileID: 8300000, guid: d2e58adffc5ddb941a479387b2f29549, type: 3}
+  - doSp: {fileID: 8300000, guid: b7bf812206266ff45ba22fb660acaccf, type: 3}
+  - sword: {fileID: 8300000, guid: 5c382e584fb2e424e825958755446538, type: 3}
+  - recoverHp: {fileID: 8300000, guid: d2e2373b24481e24a936a38772593719, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

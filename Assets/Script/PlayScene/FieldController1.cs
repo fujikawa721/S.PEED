@@ -13,8 +13,6 @@ public class FieldController : MonoBehaviour
     //トランプのプレハブ
     public GameObject fieldcard;
 
-    [SerializeField] PlayerHandController playerHand;
-
     //Prefabオブジェクトの親オブジェクトへの参照を保持する
     public Transform ParentObj;
 
@@ -39,18 +37,6 @@ public class FieldController : MonoBehaviour
 
     public CardData[] fieldcards = new CardData[2];
 
-    // Start is called before the first frame update
-    void Start()
-    {
-            
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public IEnumerator ReadyGame()
     {
         audioSource = GetComponent<AudioSource>();
@@ -64,6 +50,7 @@ public class FieldController : MonoBehaviour
     {
         fieldcards[fieldNumber].serialNumber = numberFromDeck;
         int posx = posx_start + fieldNumber * SPACE_OF_CARD;
+        Destroy(fieldcards[fieldNumber].card);
         fieldcards[fieldNumber].card = Instantiate(fieldcard, ParentObj, false);
         fieldcards[fieldNumber].card.transform.localPosition = new Vector3(posx, 0, -1);
 

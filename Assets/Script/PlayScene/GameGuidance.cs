@@ -17,13 +17,6 @@ public class GameGuidance :MonoBehaviour
         audioSource = GetComponent<AudioSource>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-
     public void play_se_voice_spee()
     {
         audioSource.clip = voice_spee;

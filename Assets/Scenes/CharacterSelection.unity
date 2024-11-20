@@ -848,8 +848,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: ebea487a9c371d8499b724cc3756f216, type: 3}
-  m_Type: 0
+  m_Sprite: {fileID: 10917, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -2275,6 +2275,7 @@ MonoBehaviour:
   sp_info_text: {fileID: 1727665573}
   chara_obj: {fileID: 1428065800}
   chara_img: {fileID: 0}
+  null_img: {fileID: 21300000, guid: e7cf1a16ab0498f48a50c54a8dedf5e9, type: 3}
   argyle_img: {fileID: 21300000, guid: 0b8fe747cc558a647802447277262960, type: 3}
   kokoro_img: {fileID: 21300000, guid: 7d7b4326a623bae4982b10b8001847d5, type: 3}
   mark_obj: {fileID: 290735838}
@@ -2614,15 +2615,15 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 0.3
-  m_fontSizeBase: 0.3
+  m_fontSize: 0.25
+  m_fontSizeBase: 0.25
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_VerticalAlignment: 4096
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -2780,6 +2781,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectController: {fileID: 1950792030}
+  character_data: {fileID: 0}
 --- !u!114 &1837402272
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2949,6 +2951,7 @@ MonoBehaviour:
   enemyCharacter: {fileID: 1487887040}
   ready_button: {fileID: 1079919327}
   load_display: {fileID: 1629258874}
+  nullCharacterData: {fileID: 11400000, guid: 4c95c88e1b2997249979d62b9a71c251, type: 2}
   cursor: {fileID: 8300000, guid: f280bc4f86486804884332082fcfa299, type: 3}
   select: {fileID: 8300000, guid: 5632dc8b4495f314b97f52812ef33e05, type: 3}
   back: {fileID: 8300000, guid: 0279efa8ddae2194ebc60a13666d3519, type: 3}
@@ -3178,15 +3181,15 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 0.3
-  m_fontSizeBase: 0.3
+  m_fontSize: 0.25
+  m_fontSizeBase: 0.25
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_HorizontalAlignment: 8
+  m_VerticalAlignment: 4096
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -3283,6 +3286,7 @@ MonoBehaviour:
   sp_info_text: {fileID: 1986511437}
   chara_obj: {fileID: 299317974}
   chara_img: {fileID: 0}
+  null_img: {fileID: 21300000, guid: e7cf1a16ab0498f48a50c54a8dedf5e9, type: 3}
   argyle_img: {fileID: 21300000, guid: 0b8fe747cc558a647802447277262960, type: 3}
   kokoro_img: {fileID: 21300000, guid: 7d7b4326a623bae4982b10b8001847d5, type: 3}
   mark_obj: {fileID: 265707925}

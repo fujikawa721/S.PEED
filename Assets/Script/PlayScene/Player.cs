@@ -11,41 +11,29 @@ public class Player : MonoBehaviour
     [SerializeField] private SPGauge spGauge;
     [SerializeField] private Player enemyPlayer;
     [SerializeField] private Deck deck;
-    [SerializeField] private CutInGenerator cutInGenerator;
-    [SerializeField] public CharacterData characterData;
-    [SerializeField] public GameController gameController;
-    [SerializeField] TextMeshProUGUI comboText;
+    [SerializeField] private PlayerHandController playerHandController;
 
-    //キャラクターの顔画像読み込み
-    [SerializeField] public Sprite faceArgyle;
-    [SerializeField] public Sprite faceKokoro;
+    [SerializeField] public CharacterData characterData;
+    [SerializeField] public CharacterAction characterAction;
+
+    [SerializeField] public GameController gameController;
+    [SerializeField] private PlaySePlayer playSePlayer;
+
+    //画面上部に表示されるキャラクターの顔画像関連
     [SerializeField] public GameObject faceObject;
     [SerializeField] private Image faceImage;
-
-    //SP関連の効果音の読み込み
-    AudioSource audioSource;
-    public AudioClip spgaugeMax;
-    public AudioClip doSp;
-    public AudioClip sword;
-    public AudioClip recoverHp;
 
     //プレイヤーのステータス関連
     public int nowHp = 100;
     public int nowSpPoint = 0;
     private const int PLUS_SPPOINT = 1;
 
-
     //攻撃ダメージの計算に使用する変数
     public int combo = 0;
     private float damageRatio = 1.0f;//攻撃倍率
-    
-    //【3秒以内】に攻撃を行うとコンボが成立する。※例外のキャラクターも存在する。
-    private int comboTime = 3;
-    private int timerCount;
-    private float comboDamageRatio = 0.05f;//コンボダメージ倍率
+    public float attackDamage;
 
-    //コンボタイマー関連の読み込み
-    [SerializeField] private  Image comboTimerImage;
+    
     private const float DURATION = 0.5f;
 
     public bool canDoSpecial;
@@ -53,9 +41,9 @@ public class Player : MonoBehaviour
 
     public IEnumerator ReadyGame()
     {
-        cutInGenerator.ReadyGame();
-        cutInGenerator.CheckCutInImg(characterData.character_id);
-        audioSource = GetComponent<AudioSource>();
+        yield return (playerHandController.ReadyGame(PutCardAction));
+        yield return StartCoroutine(playSePlayer.ReadyAudio());
+        yield return StartCoroutine(characterAction.Ready(characterAction.characterSkill, characterData,RecoverHp, PlusSpGauge));
         CheckPlayerface();
         hpGauge.SetGauge(1f);
         spGauge.SetGauge(0f);
@@ -63,33 +51,31 @@ public class Player : MonoBehaviour
     }
 
     /// <summary>
+    /// 手札から場札を置いた際に呼び出される処理。属性カードか判定し、攻撃処理を行う。
+    /// </summary>
+    public void PutCardAction(int handNumber)
+    {
+        bool isElementCard = playerHandController.CheckElement(handNumber,characterData.elementMark);
+        if (isElementCard == true) {
+            PlusSpGauge(1);
+            characterAction.ElementAction();
+        } 
+        AttackEnemy();
+    }
+
+
+    /// <summary>
     /// 攻撃を与える処理。コンボが成立する猶予時間は基本は5秒。
     /// </summary>
     public void AttackEnemy()
     {
-        timerCount = comboTime;
-        combo++;
-        damageRatio = 1.0f + comboDamageRatio * (combo - 1);
-        float attackDamage = characterData.base_damage * damageRatio;
-
-        if(combo == 1)
-        {
-            StartCoroutine(ComboCounter());
-        }
-
-        if (combo > 1)
-        {
-            comboText.text = @$"{combo}コンボ!";
-        }
-
-        enemyPlayer.TakesDamage((int)attackDamage);
+        characterAction.NormalAttack();
     }
-
 
     public void TakesDamage(int damage)
     {
         nowHp = nowHp - damage;
-        hpGauge.TakeDamage(damage, characterData.max_hp);
+        hpGauge.TakeDamage(damage, characterData.maxHp);
     }
 
     /// <summary>
@@ -97,40 +83,40 @@ public class Player : MonoBehaviour
     /// </summary>
     public void RecoverHp(int recoverHp)
     {
-        if(nowHp + recoverHp > characterData.max_hp)
+        if(nowHp + recoverHp > characterData.maxHp)
         {
-            recoverHp = characterData.max_hp - nowHp;
+            recoverHp = characterData.maxHp - nowHp;
         }
 
         nowHp = nowHp + recoverHp;
-        hpGauge.TakeDamage(-recoverHp, characterData.max_hp);
+        hpGauge.TakeDamage(-recoverHp, characterData.maxHp);
     }
 
     /// <summary>
     /// SPゲージを増加させる処理。SPポイントの上限値を超えてチャージされないように制御。
     /// </summary>
-    public void PlusSpGauge()
+    public void PlusSpGauge(int getSpPoint)
     {
+        playSePlayer.PlaySeSpPointGet();
         nowSpPoint += PLUS_SPPOINT;
-        
-        if (nowSpPoint > characterData.max_sp_point)
+       
+        if (nowSpPoint > characterData.maxSpPoint)
         {
-            nowSpPoint = characterData.max_sp_point;
+            nowSpPoint = characterData.maxSpPoint;
         }
-
-        float plusSpPointRate = ((float)nowSpPoint / characterData.max_sp_point);
+        float plusSpPointRate = ((float)nowSpPoint / characterData.maxSpPoint);
         spGauge.PlusSpGauge(plusSpPointRate);
         JudgeCanDoSp();
     }
 
     /// <summary>
-    /// SPゲージがMAXになった時の処理。CanDoSpecialをDeck.csがクリック可能か確認するのに使用。
+    /// SPゲージがMAXになった時の処理。CanDoSpecialはDeck.csがクリック可能か確認するのに使用。
     /// </summary>
     private  void JudgeCanDoSp()
     {     
-        if (nowSpPoint >= characterData.max_sp_point)
+        if (nowSpPoint >= characterData.maxSpPoint)
         {
-            playSeSpgaugeMax();
+            playSePlayer.PlaySeSpgaugeMax();
             canDoSpecial = true;
             deck.AnimateDeckFlash();
         }
@@ -148,51 +134,15 @@ public class Player : MonoBehaviour
     public IEnumerator DoSpecial()
     {
         gameController.PauseGamePlaying();
-        PlaySeDoSp();
-        switch (characterData.character_id)
-        {
-            case 1:
-                yield return StartCoroutine(specialKasenzan());
-                audioSource.clip = sword;
-                break;
-            case 2:
-                yield return StartCoroutine(specialIyashiNoUta());
-                audioSource.clip = recoverHp;
-                break;
-            default:
-                Debug.Log(@$"スペシャルIDにエラーがあります");
-                break;
-        }
+        playSePlayer.PlaySeDoSp();
+        yield return StartCoroutine(characterAction.Special());
+        
+        nowSpPoint = 0;
+        JudgeCanDoSp();
+        spGauge.PlusSpGauge(0f);
         deck.StopAnimate();
-        audioSource.Play();
+        //audioSource.Play();
         gameController.ReStartGamePlaying();
-        yield return null;
-    }
-
-    
-    /// <summary>
-    /// S.P『火閃斬』相手のHPに通常の10倍のダメージを与える。
-    /// </summary>
-    private IEnumerator specialKasenzan()
-    {
-        yield return StartCoroutine(cutInGenerator.AnimateSpecialCutIn());
-        enemyPlayer.TakesDamage(characterData.base_damage * 10);
-        nowSpPoint = 0;
-        JudgeCanDoSp();
-        spGauge.PlusSpGauge(0f);
-        yield return null;
-    }
-
-    /// <summary>
-    /// S.P『癒しの歌』自分のHPを大回復する。
-    /// </summary>
-    private IEnumerator specialIyashiNoUta()
-    {
-        yield return StartCoroutine(cutInGenerator.AnimateSpecialCutIn());
-        nowSpPoint = 0;
-        RecoverHp(50);
-        JudgeCanDoSp();
-        spGauge.PlusSpGauge(0f);
         yield return null;
     }
 
@@ -201,60 +151,33 @@ public class Player : MonoBehaviour
     /// </summary>
     private void CheckPlayerface()
     {
-        faceImage = faceObject.GetComponent<Image>(); ;
-        switch (characterData.character_id)
+        faceImage = faceObject.GetComponent<Image>();
+        faceImage.sprite = characterData.faceImage;
+        switch (characterData.characterId)
         {
             case 1:
-                faceImage.sprite = faceArgyle;
+                characterAction.characterSkill = new ArgyleSkill();
                 break;
             case 2:
-                faceImage.sprite = faceKokoro;
+                characterAction.characterSkill = new KokoroSkill();
                 break;
             default:
                 Debug.Log(@$"スペシャルIDにエラーがあります");
                 break;
         }
     }
+    
+
     /// <summary>
-    /// コンボ成立を判定する処理。ゲームが中断されている間はカウンターを中断させる。
+    /// エネミーの自動行動用の処理。EnemyUIから呼び出される。
     /// </summary>
-    private IEnumerator ComboCounter()
+    public IEnumerator DoEnemyAction()
     {
-        while(timerCount > 0)
+        yield return StartCoroutine(playerHandController.PutCardOfEnemy());
+        if (canDoSpecial == true)
         {
-            while (gameController.canPlayNow == false)
-            {
-                yield return new WaitForSeconds(0.5f);
-                if (gameController.endGameFlg == true)
-                {
-                    break;
-                }
-            }
-            yield return new WaitForSeconds(1.0f);
-            timerCount -= 1;
-            float timerFill =1 - (float)timerCount / comboTime;
-            comboTimerImage.DOFillAmount(timerFill, DURATION);
-
-            if (timerCount == 0) {
-                combo = 0;
-                comboText.text = @$"";
-            }
-
+            yield return StartCoroutine(DoSpecial());
         }
-    }
-
-    //★効果音再生
-    public void playSeSpgaugeMax()
-    {
-        
-        audioSource.clip = spgaugeMax;
-        audioSource.Play();
-    }
-
-    public void PlaySeDoSp()
-    {
-        audioSource.clip = doSp;
-        audioSource.Play();
     }
 
 }

@@ -11,18 +11,6 @@ public class Card : MonoBehaviour, IPointerClickHandler
     private int handNumber;
 
 
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     //PlayerHandConrtollerから呼び出される。
     //何番目の手札か、カードをクリックした時実行するメソッド（コールバック）を受け取る。
     public void CardParameter(int playerHandNumber, ClickCard clickCard)

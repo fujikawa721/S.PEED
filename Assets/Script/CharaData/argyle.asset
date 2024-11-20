@@ -12,12 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6b88ff1b4a706a40a8f64f759cccbe0, type: 3}
   m_Name: argyle
   m_EditorClassIdentifier: 
-  character_name: "\u30A2\u30FC\u30AC\u30A4\u30EB"
-  character_id: 1
-  max_hp: 100
-  base_damage: 5
-  max_sp_point: 3
-  element_mark: D
-  character_type: "\u653B\u6483\u30BF\u30A4\u30D7"
-  sp_name: "\u706B\u9583\u65AC"
-  sp_info: "\u76F8\u624B\u306EHP\u306B\u5927\u30C0\u30E1\u30FC\u30B8\u3092\u4E0E\u3048\u308B\u3002"
+  characterName: "\u30A2\u30FC\u30AC\u30A4\u30EB"
+  characterId: 1
+  maxHp: 100
+  baseDamage: 2
+  maxSpPoint: 3
+  elementMark: D
+  characterType: "\u653B\u6483\u30BF\u30A4\u30D7"
+  spName: "\u706B\u9583\u65AC"
+  spInfo: "\u76F8\u624B\u306EHP\u306B\u5927\u30C0\u30E1\u30FC\u30B8\u3092\u4E0E\u3048\u308B\u3002"
+  faceImage: {fileID: 21300000, guid: ee769ca5df0da5445b0a8dae732e427d, type: 3}
+  normalCutInImage: {fileID: 21300000, guid: 5cb3e41f448bf544bae1f0d791f92dd8, type: 3}
+  specialCutInImage: {fileID: 21300000, guid: a38a4184c70876740b8c428987f92d03, type: 3}

@@ -11,14 +11,13 @@ public class Deck : MonoBehaviour, IPointerClickHandler
     [SerializeField] FieldController field;
     [SerializeField] TextMeshProUGUI restDecksText;
     [SerializeField] Player player;
+    [SerializeField] PlaySeDeck playSeDeck;
     [SerializeField] private Image deckImg;
 
-
-    AudioSource audioSource;
-    public AudioClip deckMax;
-
+    //山札の最大枚数は【26枚】
     private const int NUMBER_OF_DECK = 26;
-    private const float SPEED_DRAWHAND = 0.1f;
+    
+    //山札から場札にカードを置いた際に【0.2f】後続処理を待つ。
     private const float SPEED_DRAWFIELD = 0.2f;
 
     private int[] decks = new int[NUMBER_OF_DECK];
@@ -26,34 +25,30 @@ public class Deck : MonoBehaviour, IPointerClickHandler
 
     private Tween deckAnimation;
 
-    public void Start()
-    {
-        //AnimateDeckFlash();
-    }
 
     public void Update()
     {
         restDecksText.text = @$"{restDeck}";
-
     }
 
 
     public IEnumerator ReadyGame()
     {
-        audioSource = GetComponent<AudioSource>();
+        yield return StartCoroutine(playSeDeck.ReadyAudio());
         yield return null;
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
         Debug.Log(@$"SPポイント{player.nowSpPoint}");
+        //transform.position -= Vector3.up * 0.3f;
+        transform.localScale = Vector3.one * 1.0f;
 
         if (player.canDoSpecial == true)
         {
             Debug.Log(@$"スペシャル発動！");
             StartCoroutine(player.DoSpecial());
-            transform.position -= Vector3.up * 0.3f;
-            transform.localScale = Vector3.one * 1.0f;
+            
         }
         else
         {
@@ -65,7 +60,7 @@ public class Deck : MonoBehaviour, IPointerClickHandler
     {
         if (player.canDoSpecial == true)
         {
-            transform.position += Vector3.up * 0.3f;
+           // transform.position += Vector3.up * 0.3f;
             transform.localScale = Vector3.one * 1.1f;
         }
     }
@@ -74,7 +69,7 @@ public class Deck : MonoBehaviour, IPointerClickHandler
     {
         if (player.canDoSpecial == true)
         {
-            transform.position -= Vector3.up * 0.3f;
+            //transform.position -= Vector3.up * 0.3f;
             transform.localScale = Vector3.one * 1.0f;
         }
 
@@ -82,18 +77,20 @@ public class Deck : MonoBehaviour, IPointerClickHandler
 
 
     /// <summary>
-    /// デッキ枚数が０になった時、新しく山札を作り直す。
+    /// デッキ枚数が０になった時、新しく山札を作り直す。また、GameControllerがゲーム開始時に呼び出す。
     /// </summary>
-    /// <returns></returns>
     public IEnumerator MakePlayerDeck()
     {
-        PlaySeDeckMax();
+        playSeDeck.PlaySeDeckMax();
         restDeck = NUMBER_OF_DECK;
         MakeDeckSerialNumber();
         ShuffleDeck();
         yield return null;
     }
 
+    /// <summary>
+    /// 山札の先頭のカードを場札に置く。ゲーム開始時、仕切り直し時にGameControllerから呼び出される。
+    /// </summary>
     public IEnumerator MakeField(int fieldcardNumber)
     {
         if (restDeck < 1)
@@ -117,14 +114,6 @@ public class Deck : MonoBehaviour, IPointerClickHandler
         restDeck--;
         return decks[restDeck];
     }
-    
-
-    public void PlaySeDeckMax()
-    {
-        audioSource.clip = deckMax;
-        audioSource.Play();
-    }
-
 
     /// <summary>
     /// デッキのすべてのカードそれぞれに連番の数値を割り振る。
@@ -151,30 +140,18 @@ public class Deck : MonoBehaviour, IPointerClickHandler
         }
     }
 
-
+    /// <summary>
+    /// SPゲージがMAXになった時に山札の画像を点滅させる。
+    /// </summary>
     public void AnimateDeckFlash()
     {
-        deckAnimation = DOTween.Sequence().OnStart(() =>
-        {
-            deckImg.transform.DOScale(new Vector3(1, 1f, 0f),0f);
-            deckImg.DOFade(1, 0);
-        })
+        deckAnimation.Kill();
+        deckImg.transform.DOScale(new Vector3(1, 1f, 0f), 0f);
+        deckImg.DOFade(1, 0);
+        deckAnimation = DOTween.Sequence()
             .Append(deckImg.transform.DOScale(new Vector3(1.2f, 1.2f, 0f), 1f).SetLoops(-1, LoopType.Restart))
             .Join(deckImg.DOFade(0, 1).SetLoops(-1, LoopType.Restart));
-        deckAnimation.Play();
-
     }
-
-    /// <summary>
-    /// デッキの画像を点滅させる処理。SPゲージがMAXの時に実行
-    /// </summary>
-    //private void AnimateDeckFlash()
-    //{
-    //var image = DeckImg;
-    //image.transform.DOScale(new Vector3(1.2f,1.2f,0f),1f).SetLoops(-1, LoopType.Restart);
-    //image.DOFade(0, 1).SetLoops(-1, LoopType.Restart);
-    // DeckAnimation.Play();
-    //}
 
     public void StopAnimate()
     {

@@ -15,20 +15,21 @@ public class HPGauge : MonoBehaviour
     private int VIBRATE = 100;//—h‚ê‹ï‡
 
     private float nowHpGauge = 1f;
+    private Tween shakeTween;
 
     public void SetGauge(float value)
     {
-        healthImage.DOFillAmount(value, DURATION)
-            .OnComplete(() =>
-            {
-                burnImage
-                    .DOFillAmount(value, DURATION / 2f)
-                    .SetDelay(0.5f);
-            });
-        transform.DOShakePosition(
-            DURATION / 2f,
-            STRENGTH, VIBRATE);
 
+        healthImage.DOFillAmount(value, DURATION).OnComplete(() =>
+            {
+                burnImage.DOFillAmount(value, DURATION / 2f).SetDelay(0.5f);
+            });
+        if (shakeTween == null) {
+            Debug.Log("shakeTween‚Ínull");
+            shakeTween = transform.DOShakePosition(DURATION / 2f,STRENGTH, VIBRATE).SetAutoKill(false).Pause();
+        }
+        Debug.Log("shakeTween‚Ínull‚¶‚á‚È‚¢");
+        shakeTween.Restart();
         nowHpGauge = value;
     }
 

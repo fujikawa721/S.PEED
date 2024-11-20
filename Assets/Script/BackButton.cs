@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 public class BackButton : MonoBehaviour, IPointerClickHandler
 {
     [SerializeField] private SelectController selectController;
+    [SerializeField] private CharacterData character_data;
 
     void Start()
     {

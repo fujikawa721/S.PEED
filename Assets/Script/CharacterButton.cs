@@ -10,18 +10,6 @@ public class CharacterButton : MonoBehaviour, IPointerClickHandler
     [SerializeField] private CharacterData character_data;
 
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        Debug.Log(@$"selection_statusÇ™ê≥ÇµÇ≠Ç†ÇËÇ‹ÇπÇÒÅB");
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public void OnPointerClick(PointerEventData eventData)
     {
         StartCoroutine(selectController.select_character(character_data));
