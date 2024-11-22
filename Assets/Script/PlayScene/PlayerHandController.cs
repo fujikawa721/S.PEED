@@ -8,7 +8,6 @@ public class PlayerHandController : MonoBehaviour
 {
     [SerializeField] private Deck deck;
     [SerializeField] private FieldController fieldController;
-    [SerializeField] private PlaySeHand playSeHand;
     private string playerElementMark;
 
     // 場札にカードを置いた際のコールバック処理
@@ -50,7 +49,6 @@ public class PlayerHandController : MonoBehaviour
 
     public IEnumerator ReadyGame(CardPut putCardAction)
     {
-        yield return StartCoroutine(playSeHand.ReadyAudio());
         cardPutCallBack = putCardAction;
         ClearHand();
         yield return null;
@@ -210,10 +208,7 @@ public class PlayerHandController : MonoBehaviour
     {
         cardImage = playerHands[playerhandNumber].cardObject.GetComponent<Image>();
         cardScript = playerHands[playerhandNumber].cardObject.GetComponent<Card>();
-
-        playSeHand.PlaySeDraw();
         cardImage.sprite = Resources.Load<Sprite>("CardImages/" + serialNumber.ToString());
-
         DecomposeCardParameter(playerhandNumber, serialNumber);
         cardScript.CardParameter(playerhandNumber, JudgePlayerAction);
     }

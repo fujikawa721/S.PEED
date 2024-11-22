@@ -21,7 +21,7 @@ public class BackButton : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        StartCoroutine(selectController.back_selection_status());
+        StartCoroutine(selectController.BackSelectionStatus());
     }
 
     public void OnPointerEnter()

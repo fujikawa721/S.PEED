@@ -17,14 +17,14 @@ public class Player : MonoBehaviour
     [SerializeField] public CharacterAction characterAction;
 
     [SerializeField] public GameController gameController;
-    [SerializeField] private PlaySePlayer playSePlayer;
+    [SerializeField] private SoundManager soundManager;
 
     //画面上部に表示されるキャラクターの顔画像関連
     [SerializeField] public GameObject faceObject;
     [SerializeField] private Image faceImage;
 
     //プレイヤーのステータス関連
-    public int nowHp = 100;
+    public int nowHp = 10;
     public int nowSpPoint = 0;
     private const int PLUS_SPPOINT = 1;
 
@@ -42,7 +42,6 @@ public class Player : MonoBehaviour
     public IEnumerator ReadyGame()
     {
         yield return (playerHandController.ReadyGame(PutCardAction));
-        yield return StartCoroutine(playSePlayer.ReadyAudio());
         yield return StartCoroutine(characterAction.Ready(characterAction.characterSkill, characterData,RecoverHp, PlusSpGauge));
         CheckPlayerface();
         hpGauge.SetGauge(1f);
@@ -97,7 +96,7 @@ public class Player : MonoBehaviour
     /// </summary>
     public void PlusSpGauge(int getSpPoint)
     {
-        playSePlayer.PlaySeSpPointGet();
+        soundManager.PlaySPPointGet();
         nowSpPoint += PLUS_SPPOINT;
        
         if (nowSpPoint > characterData.maxSpPoint)
@@ -116,7 +115,7 @@ public class Player : MonoBehaviour
     {     
         if (nowSpPoint >= characterData.maxSpPoint)
         {
-            playSePlayer.PlaySeSpgaugeMax();
+            soundManager.PlaySPGaugeMax();
             canDoSpecial = true;
             deck.AnimateDeckFlash();
         }
@@ -134,7 +133,7 @@ public class Player : MonoBehaviour
     public IEnumerator DoSpecial()
     {
         gameController.PauseGamePlaying();
-        playSePlayer.PlaySeDoSp();
+        soundManager.PlayDoSP();
         yield return StartCoroutine(characterAction.Special());
         
         nowSpPoint = 0;

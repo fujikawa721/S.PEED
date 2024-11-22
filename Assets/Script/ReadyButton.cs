@@ -20,7 +20,7 @@ public class ReadyButton : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        StartCoroutine(selectController.goto_gameplay());
+        StartCoroutine(selectController.GoGameplayScene());
     }
 
     public void OnPointerEnter()

@@ -8,10 +8,10 @@ using TMPro;
 
 public class Deck : MonoBehaviour, IPointerClickHandler
 {
+    [SerializeField] SoundManager soundManager;
     [SerializeField] FieldController field;
     [SerializeField] TextMeshProUGUI restDecksText;
     [SerializeField] Player player;
-    [SerializeField] PlaySeDeck playSeDeck;
     [SerializeField] private Image deckImg;
 
     //éRéDÇÃç≈ëÂñáêîÇÕÅy26ñáÅz
@@ -29,13 +29,6 @@ public class Deck : MonoBehaviour, IPointerClickHandler
     public void Update()
     {
         restDecksText.text = @$"{restDeck}";
-    }
-
-
-    public IEnumerator ReadyGame()
-    {
-        yield return StartCoroutine(playSeDeck.ReadyAudio());
-        yield return null;
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -81,7 +74,7 @@ public class Deck : MonoBehaviour, IPointerClickHandler
     /// </summary>
     public IEnumerator MakePlayerDeck()
     {
-        playSeDeck.PlaySeDeckMax();
+        soundManager.PlayDeckMax();
         restDeck = NUMBER_OF_DECK;
         MakeDeckSerialNumber();
         ShuffleDeck();
@@ -111,6 +104,7 @@ public class Deck : MonoBehaviour, IPointerClickHandler
         {
             StartCoroutine(MakePlayerDeck());
         }
+        soundManager.PlayDraw();
         restDeck--;
         return decks[restDeck];
     }

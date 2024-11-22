@@ -6,10 +6,6 @@ using DG.Tweening;
 
 public class FieldController : MonoBehaviour
 {
-    AudioSource audioSource;
-    public AudioClip speed;
-    public AudioClip whistle;
-
     //トランプのプレハブ
     public GameObject fieldcard;
 
@@ -36,12 +32,6 @@ public class FieldController : MonoBehaviour
     }
 
     public CardData[] fieldcards = new CardData[2];
-
-    public IEnumerator ReadyGame()
-    {
-        audioSource = GetComponent<AudioSource>();
-        yield return null;
-    }
 
     /// <summary>
     /// Deck.csから場札の何枚目か、カード番号（シリアルナンバー）を受けとりその情報をもとにオブジェクトを生成する。
@@ -164,19 +154,6 @@ public class FieldController : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
         Destroy(handCard);
     }
-
-    public void PlaySeSpeed()
-    {
-        audioSource.clip = speed;
-        audioSource.Play();
-    }
-
-    public void PlaySeWhistle()
-    {
-        audioSource.clip = whistle;
-        audioSource.Play();
-    }
-
     
 
 }

@@ -17,6 +17,7 @@ public class CharacterData : ScriptableObject
     public string characterType;
     public string spName;
     public string spInfo;
+    public Sprite characterImage;
     public Sprite faceImage;
     public Sprite normalCutInImage;
     public Sprite specialCutInImage;

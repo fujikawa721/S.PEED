@@ -21,6 +21,7 @@ MonoBehaviour:
   characterType: "\u56DE\u5FA9\u30BF\u30A4\u30D7"
   spName: "\u3044\u3084\u3057\u306E\u6B4C"
   spInfo: "\u81EA\u5206\u306EHP\u3092\u4E2D\u56DE\u5FA9\u3059\u308B"
+  characterImage: {fileID: 21300000, guid: 7d7b4326a623bae4982b10b8001847d5, type: 3}
   faceImage: {fileID: 21300000, guid: 4298c42dc9bf66e4492b87ee9eb80f00, type: 3}
   normalCutInImage: {fileID: 21300000, guid: 64cf4967f47b644449910ace6bf0a420, type: 3}
   specialCutInImage: {fileID: 21300000, guid: 5b1de7e5f987aac47a398c63d2d1c5a1, type: 3}

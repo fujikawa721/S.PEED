@@ -6,20 +6,16 @@ using TMPro;
 
 public class GameController : MonoBehaviour
 {
-
-    //[SerializeField] PlayerHand playerHand;
-    //[SerializeField] PlayerDeck playerDeck;
-    
-    
     [SerializeField] Deck deck;
     [SerializeField] Deck enemyDeck;
     [SerializeField] EnemyUI enemyUI;
-    [SerializeField] FieldController fieldController;
     [SerializeField] Player player;
     [SerializeField] Player enemyPlayer;
     [SerializeField] GameObject noactionCurtain;
     [SerializeField] GameObject gameMessage;
-    [SerializeField] GameGuidance gameGuidance;
+    [SerializeField] ResultDisplay resultDisplay;
+    [SerializeField] private LoadingManager loadingManager;
+    [SerializeField] private SoundManager soundManager;
 
     [SerializeField] PlayerHandController playerHandController;
     [SerializeField] PlayerHandController enemyHandController;
@@ -39,7 +35,6 @@ public class GameController : MonoBehaviour
     void Start()
     {
         StartCoroutine(StartGame());
-
     }
 
     void Update()
@@ -50,20 +45,22 @@ public class GameController : MonoBehaviour
 
     public IEnumerator StartGame()
     {
+        soundManager.PlayBgmBattle();
         yield return StartCoroutine(LoadGame());
+        yield return StartCoroutine(loadingManager.EndLoad());
         gameMessage.SetActive(true);
         gameMessageText.text = @$"READY...";
         
         StartCoroutine(ReadyPlayer());
         StartCoroutine(ReadyEnemy());
-        yield return new WaitForSeconds(3.0f);//手札生成処理後の時間
+        yield return new WaitForSeconds(3.0f);
 
         gameMessageText.text = @$"START!!";
         yield return new WaitForSeconds(0.5f);
 
         StartCoroutine(deck.MakeField(0));
         StartCoroutine(enemyDeck.MakeField(1));
-        fieldController.PlaySeSpeed();
+        soundManager.PlaySpeed();
         canPlayNow = true;
         noactionCurtain.SetActive(false);
         gameMessage.SetActive(false);
@@ -143,7 +140,7 @@ public class GameController : MonoBehaviour
     public IEnumerator Speed()
     {
         yield return new WaitForSeconds(1.0f);
-        fieldController.PlaySeWhistle();
+        soundManager.PlayWhistle();
         PauseGamePlaying();
         gameMessage.SetActive(true);
         gameMessageText.text = @$"仕切り直し";
@@ -151,14 +148,14 @@ public class GameController : MonoBehaviour
         yield return new WaitForSeconds(1.0f);
 
         gameMessageText.text = @$"スピー　 ";
-        gameGuidance.play_se_voice_spee();
+        soundManager.PlayVoiceSPEE();
         yield return new WaitForSeconds(1.0f);
 
         gameMessageText.text = @$"スピード!";
-        gameGuidance.play_se_voice_do();
+        soundManager.PlayVoiceDO();
         yield return new WaitForSeconds(0.5f);
         
-        fieldController.PlaySeSpeed();
+        soundManager.PlaySpeed();
         StartCoroutine(deck.MakeField(0));
         StartCoroutine(enemyDeck.MakeField(1));
         gameMessage.SetActive(false);
@@ -180,7 +177,18 @@ public class GameController : MonoBehaviour
             noactionCurtain.SetActive(true);
             gameMessage.SetActive(true);
             gameMessageText.text = @$"GAME SET!!";
-            fieldController.PlaySeWhistle();
+            soundManager.PlayWhistle();
+
+            if(player.nowHp <= 0)
+            {
+                string winner = "2P PLAYER";
+                StartCoroutine(resultDisplay.Ready(enemyPlayer,winner));
+            }else if (enemyPlayer.nowHp <= 0)
+            {
+                string winner = "1P PLAYER";
+                StartCoroutine(resultDisplay.Ready(player,winner));
+            }
+            
         }
     }
 
@@ -189,9 +197,6 @@ public class GameController : MonoBehaviour
         yield return StartCoroutine(PassCharacterData());
         yield return StartCoroutine(player.ReadyGame());
         yield return StartCoroutine(enemyPlayer.ReadyGame());
-        yield return StartCoroutine(fieldController.ReadyGame());
-        yield return StartCoroutine(deck.ReadyGame());
-        yield return StartCoroutine(enemyDeck.ReadyGame());
         
 
     }

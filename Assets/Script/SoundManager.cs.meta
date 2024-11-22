@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: 0f538b60f6b7e3a48bafef821c72a3ff
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - bgm: {instanceID: 0}
+  - systemSE: {instanceID: 0}
+  - playerSE: {instanceID: 0}
+  - bgmCharacterSelection: {fileID: 8300000, guid: e147ae88f5480634ba33c504507c457c, type: 3}
+  - bgmBattle: {fileID: 8300000, guid: f94e0d1bad673f04fb9f42aef904cfcf, type: 3}
+  - cursor: {fileID: 8300000, guid: f280bc4f86486804884332082fcfa299, type: 3}
+  - select: {fileID: 8300000, guid: 5632dc8b4495f314b97f52812ef33e05, type: 3}
+  - back: {fileID: 8300000, guid: 0279efa8ddae2194ebc60a13666d3519, type: 3}
+  - gameready: {fileID: 8300000, guid: e9a6263adaf3ebd4da9d25a7a41bfc0e, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

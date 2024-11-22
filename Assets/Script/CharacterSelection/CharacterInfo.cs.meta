@@ -1,0 +1,26 @@
+fileFormatVersion: 2
+guid: 5cc79a517725858498b530406715737f
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - chara_name_text: {instanceID: 0}
+  - chara_type_text: {instanceID: 0}
+  - sp_name_text: {instanceID: 0}
+  - sp_info_text: {instanceID: 0}
+  - chara_obj: {instanceID: 0}
+  - chara_img: {instanceID: 0}
+  - null_img: {instanceID: 0}
+  - argyle_img: {instanceID: 0}
+  - kokoro_img: {instanceID: 0}
+  - mark_obj: {instanceID: 0}
+  - mark_img: {instanceID: 0}
+  - mark_clover: {fileID: 21300000, guid: c54d17b56c41fa34983812a6da005324, type: 3}
+  - mark_diamond: {fileID: 21300000, guid: a112c0a2447d27e4fabe5535dd00bee4, type: 3}
+  - mark_spade: {fileID: 21300000, guid: 1d144b60f7b033447950d289ecc420ed, type: 3}
+  - mark_heart: {fileID: 21300000, guid: 85e0d8d6b3ffe4141af08fb53e0a1943, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
