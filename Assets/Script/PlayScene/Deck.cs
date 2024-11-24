@@ -90,7 +90,8 @@ public class Deck : MonoBehaviour, IPointerClickHandler
         {
             yield return StartCoroutine(MakePlayerDeck());
         }
-        restDeck--;
+        Debug.Log("éRéDÉhÉçÅ[");
+        restDeck= restDeck - 1;
         field.DrawDeck(fieldcardNumber, decks[restDeck]);
         yield return new WaitForSeconds(SPEED_DRAWFIELD);
     }

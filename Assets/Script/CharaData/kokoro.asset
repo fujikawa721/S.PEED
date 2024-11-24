@@ -15,7 +15,7 @@ MonoBehaviour:
   characterName: "\u30B3\u30B3\u30ED"
   characterId: 2
   maxHp: 1000
-  baseDamage: 20
+  baseDamage: 30
   maxSpPoint: 3
   elementMark: H
   characterType: "\u56DE\u5FA9\u30BF\u30A4\u30D7"
@@ -25,3 +25,7 @@ MonoBehaviour:
   faceImage: {fileID: 21300000, guid: 4298c42dc9bf66e4492b87ee9eb80f00, type: 3}
   normalCutInImage: {fileID: 21300000, guid: 64cf4967f47b644449910ace6bf0a420, type: 3}
   specialCutInImage: {fileID: 21300000, guid: 5b1de7e5f987aac47a398c63d2d1c5a1, type: 3}
+  voiceGameStart: {fileID: 8300000, guid: 2f9bf1dd30f651c498cf5a9e0b2a7358, type: 3}
+  voiceElementSkill: {fileID: 8300000, guid: 0857ee38fbd155a48a7a01dc1d33b0b6, type: 3}
+  voicePassivSkill: {fileID: 8300000, guid: 13d75df3ccf95a64a9f5ca5b3e54dc61, type: 3}
+  voiceSP: {fileID: 8300000, guid: 9b208fdff22d5b940b31e4f2cbb8d2ff, type: 3}

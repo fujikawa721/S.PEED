@@ -164,9 +164,20 @@ public class Player : MonoBehaviour
         yield return null;
     }
 
+    /// <summary>
+    /// トリガースキルの条件を確認し、条件を満たしていた場合発動する。
+    /// </summary>
     public void CheckTriggerSkill()
     {
         StartCoroutine(characterAction.CheckTrigger());
+    }
+
+    /// <summary>
+    /// トリガースキル（スピード）の条件を確認し、条件を満たしていた場合発動する。
+    /// </summary>
+    public void CheckSpeedTriggerSkill()
+    {
+        StartCoroutine(characterAction.CheckSpeedTrigger());
     }
 
     /// <summary>
@@ -178,6 +189,7 @@ public class Player : MonoBehaviour
         faceImage = faceObject.GetComponent<Image>();
         faceImage.sprite = characterData.faceImage;
         nowHp = characterData.maxHp;
+        soundManager.SetCharacterVoice(characterData);
         switch (characterData.characterId)
         {
             case 1:

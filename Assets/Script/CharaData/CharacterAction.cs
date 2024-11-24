@@ -56,12 +56,12 @@ public class CharacterAction : MonoBehaviour
     {
         StartCoroutine(characterSkill.AttackTriggerSkill(player,enemyPlayer,this));
         combo = comboManager.AddCombo();
+        StartCoroutine(characterSkill.ComboTriggerSkill(player, enemyPlayer, this));
         var damageRatio = baseDamageRatio + comboDamageRatio * (combo - 1);
         Debug.Log($"{damageRatio}");
         attackDamage = player.characterData.baseDamage * damageRatio;
         enemyPlayer.TakesDamage((int)attackDamage);
         Debug.Log($"{combo}コンボ、{attackDamage}ダメージ");
-        Debug.Log($"{canPassivSkill}パッシブスキル");
     }
 
     /// <summary>
@@ -69,6 +69,7 @@ public class CharacterAction : MonoBehaviour
     /// </summary>
     public void ElementAction()
     {
+        soundManager.PlayCVElementSkill();
         StartCoroutine(characterSkill.ElementTriggerSkill(player, enemyPlayer, this));
         switch (player.characterData.elementMark)
         {
@@ -99,14 +100,21 @@ public class CharacterAction : MonoBehaviour
 
     public IEnumerator Special()
     {
+        soundManager.PlayCVSP();
         yield return StartCoroutine(cutInGenerator.AnimateSpecialCutIn());
         StartCoroutine(characterSkill.SpecialSkill(player, enemyPlayer, this));
+        
     }
+
 
     public IEnumerator CheckTrigger()
     {
         yield return StartCoroutine(characterSkill.TriggerSkill(player, enemyPlayer, this));
+    }
 
+    public IEnumerator CheckSpeedTrigger()
+    {
+        yield return StartCoroutine(characterSkill.SpeedTriggerSkill(player, enemyPlayer, this));
     }
 
     public void ResetCombo()
@@ -140,13 +148,16 @@ public class CharacterAction : MonoBehaviour
 }
 public interface CharacterSkill
 {
-        public IEnumerator AttackTriggerSkill(Player player,Player enemyPlayer,CharacterAction characterAction);
-        public IEnumerator ElementTriggerSkill(Player player, Player enemyPlayer, CharacterAction characterAction);
-        public IEnumerator TriggerSkill(Player player, Player enemyPlayer, CharacterAction characterAction);
-        public IEnumerator SpecialSkill(Player player, Player enemyPlayer, CharacterAction characterAction);
+    public IEnumerator AttackTriggerSkill(Player player,Player enemyPlayer,CharacterAction characterAction);
+    public IEnumerator ElementTriggerSkill(Player player, Player enemyPlayer, CharacterAction characterAction);
+    public IEnumerator ComboTriggerSkill(Player player, Player enemyPlayer, CharacterAction characterAction);
+    public IEnumerator SpeedTriggerSkill(Player player, Player enemyPlayer, CharacterAction characterAction);
+    public IEnumerator TriggerSkill(Player player, Player enemyPlayer, CharacterAction characterAction);
+    public IEnumerator SpecialSkill(Player player, Player enemyPlayer, CharacterAction characterAction);
 }
-
+//----------------------------------------------------
 //キャラクターID1：アーガイルのスキル
+//----------------------------------------------------
 public class ArgyleSkill :  CharacterSkill
 {
     public IEnumerator AttackTriggerSkill(Player player, Player enemyPlayer, CharacterAction characterAction)
@@ -159,6 +170,17 @@ public class ArgyleSkill :  CharacterSkill
         yield return null;
     }
 
+    public IEnumerator ComboTriggerSkill(Player player, Player enemyPlayer, CharacterAction characterAction)
+    {
+        yield return null;
+    }
+
+    public IEnumerator SpeedTriggerSkill(Player player, Player enemyPlayer, CharacterAction characterAction)
+    {
+        yield return null;
+    }
+
+
     //【条件】HPが30%以下　【効果】攻撃力が2倍に上昇
     public IEnumerator TriggerSkill(Player player, Player enemyPlayer, CharacterAction characterAction)
     {
@@ -166,6 +188,7 @@ public class ArgyleSkill :  CharacterSkill
         {
             if (player.nowHp < player.characterData.maxHp * 0.3)
             {
+                characterAction.soundManager.PlayCVPassivSkill();
                 characterAction.normalCutInGenerator.ActiveNormalCutIn();
                 characterAction.baseDamageRatio = characterAction.baseDamageRatio * 2.0f;
                 characterAction.ActiveEventCutIn("TRIGGER SKILL", "攻撃力が2倍上昇");
@@ -182,30 +205,37 @@ public class ArgyleSkill :  CharacterSkill
     }
 }
 
+//----------------------------------------------------
+//キャラクターID2：ココロのスキル
+//----------------------------------------------------
 public class KokoroSkill : CharacterSkill
 {
-        public IEnumerator AttackTriggerSkill(Player player, Player enemyPlayer, CharacterAction characterAction)
-        {
-            yield return null;
-        }
+    public IEnumerator AttackTriggerSkill(Player player, Player enemyPlayer, CharacterAction characterAction){
+        yield return null;
+    }
 
-    public IEnumerator ElementTriggerSkill(Player player, Player enemyPlayer, CharacterAction characterAction)
-    {
+    public IEnumerator ElementTriggerSkill(Player player, Player enemyPlayer, CharacterAction characterAction){
         yield return null;
      }
 
-    //【条件】仕切り直し時　【効果】HPを小回復する。
-    public IEnumerator TriggerSkill(Player player, Player enemyPlayer, CharacterAction characterAction) {
-        if (characterAction.canPassivSkill == true)
-        {
-            if (player.nowHp < player.characterData.maxHp * 0.3)
-            {
-                characterAction.normalCutInGenerator.ActiveNormalCutIn();
-                characterAction.baseDamageRatio = characterAction.baseDamageRatio * 2.0f;
-                characterAction.ActiveEventCutIn("TRIGGER SKILL", "攻撃力が2倍上昇");
-                characterAction.canPassivSkill = false;
-            }
-        }
+    public IEnumerator ComboTriggerSkill(Player player, Player enemyPlayer, CharacterAction characterAction)
+    {
+        yield return null;
+    }
+
+    //【条件】仕切り直し時　【効果】HPを小回復【30】する。
+    public IEnumerator SpeedTriggerSkill(Player player, Player enemyPlayer, CharacterAction characterAction)
+    {
+        characterAction.soundManager.PlayCVPassivSkill();
+        characterAction.normalCutInGenerator.ActiveNormalCutIn();
+        characterAction.RecoverHpAction(30);
+        characterAction.ActiveEventCutIn("TRIGGER SKILL", "HPを小回復");
+        characterAction.canPassivSkill = false;
+        yield return null;
+    }
+
+    
+    public IEnumerator TriggerSkill(Player player, Player enemyPlayer, CharacterAction characterAction) {   
         yield return null;
     }
 
@@ -218,8 +248,10 @@ public class KokoroSkill : CharacterSkill
     }        
     
 }
-
+//----------------------------------------------------
 //キャラクターID3：ヨツバのスキル
+//----------------------------------------------------
+
 public class YotsubaSkill : CharacterSkill
 {
     public IEnumerator AttackTriggerSkill(Player player, Player enemyPlayer, CharacterAction characterAction)
@@ -233,10 +265,11 @@ public class YotsubaSkill : CharacterSkill
     }
 
     //【条件】コンボが20以上の時　【効果】コンボによるダメージ倍率を上昇させる。
-    public IEnumerator TriggerSkill(Player player, Player enemyPlayer, CharacterAction characterAction)
+    public IEnumerator ComboTriggerSkill(Player player, Player enemyPlayer, CharacterAction characterAction)
     {
         if (characterAction.comboManager.combo >= 20)
         {
+            characterAction.soundManager.PlayCVPassivSkill();
             characterAction.normalCutInGenerator.ActiveNormalCutIn();
             characterAction.comboDamageRatio = 0.1f;
             characterAction.ActiveEventCutIn("TRIGGER SKILL", "コンボダメージ倍率が上昇");
@@ -245,6 +278,17 @@ public class YotsubaSkill : CharacterSkill
         {
             characterAction.comboDamageRatio = 0.05f;
         }
+        yield return null;
+    }
+
+    public IEnumerator SpeedTriggerSkill(Player player, Player enemyPlayer, CharacterAction characterAction)
+    {
+        yield return null;
+    }
+
+    
+    public IEnumerator TriggerSkill(Player player, Player enemyPlayer, CharacterAction characterAction)
+    {
         yield return null;
     }
 
@@ -258,7 +302,10 @@ public class YotsubaSkill : CharacterSkill
     }
 }
 
+//----------------------------------------------------
 //キャラクターID4：ジャイアントのスキル
+//----------------------------------------------------
+
 public class GiantSkill : CharacterSkill
 {
     public IEnumerator AttackTriggerSkill(Player player, Player enemyPlayer, CharacterAction characterAction)
@@ -271,12 +318,22 @@ public class GiantSkill : CharacterSkill
         yield return null;
     }
 
+    public IEnumerator ComboTriggerSkill(Player player, Player enemyPlayer, CharacterAction characterAction)
+    {
+        yield return null;
+    }
+
+    public IEnumerator SpeedTriggerSkill(Player player, Player enemyPlayer, CharacterAction characterAction)
+    {
+        yield return null;
+    }
     public IEnumerator TriggerSkill(Player player, Player enemyPlayer, CharacterAction characterAction)
     {
         if (characterAction.canPassivSkill == true)
         {
             if (characterAction.baseDamageRatio > 4.0f)
             {
+                characterAction.soundManager.PlayCVPassivSkill();
                 characterAction.normalCutInGenerator.ActiveNormalCutIn();
                 characterAction.RecoverHpAction(200);
                 characterAction.ActiveEventCutIn("TRIGGER SKILL", "HPが大回復");

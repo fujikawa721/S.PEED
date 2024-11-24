@@ -16,13 +16,14 @@ public class NormalCutInGenerator : MonoBehaviour
     [SerializeField] TextMeshProUGUI eventText;
     [SerializeField] TextMeshProUGUI effectText;
     private Tween eventCutInFade;
+    private Sequence eventCutInSequence;
 
     //ノーマルカットイン用のオブジェクト
     [SerializeField] private GameObject normalCutInObject;
     [SerializeField] private Image normalCutInBase;
     [SerializeField] private Image normalCutInCharacter;
     private Tween normalCutInFade;
-    private Sequence sequence;
+    private Sequence normalCutInSequence;
 
     private const float CUTIN_SPEED = 0.5f;
     private const float CUTIN_TIME = 2.5f;
@@ -71,7 +72,20 @@ public class NormalCutInGenerator : MonoBehaviour
             eventCutInFade.Kill();
         }
 
-        eventCutInObject.transform.DOLocalMoveX(-1000, CUTIN_SPEED).From();
+        if (eventCutInSequence == null)
+        {
+            eventCutInSequence = DOTween.Sequence()
+                .Append(eventCutInObject.transform.DOLocalMoveX(-1000, CUTIN_SPEED).From())
+                .SetAutoKill(false)
+                .Pause();
+            eventCutInSequence.Play();
+        }
+        else
+        {
+            eventCutInObject.transform.localPosition = new Vector3(0, eventCutInObject.transform.localPosition.y, eventCutInObject.transform.transform.localPosition.z);
+        }
+        eventCutInSequence.Restart();
+
         eventCutInFade = DOVirtual.DelayedCall(CUTIN_TIME, () =>
         {
             eventCutInObject.SetActive(false); 
@@ -98,14 +112,14 @@ public class NormalCutInGenerator : MonoBehaviour
             normalCutInFade.Kill();
         }
 
-        if (sequence == null)
+        if (normalCutInSequence == null)
         {
-            sequence = DOTween.Sequence()
+            normalCutInSequence = DOTween.Sequence()
                 .Append(normalCutInBase.transform.DOScaleY(0, CUTIN_SPEED).From())
                 .Append(normalCutInCharacter.transform.DOLocalMoveX(-400, CUTIN_SPEED).From())
                 .SetAutoKill(false) 
                 .Pause();           
-            sequence.Play();
+            normalCutInSequence.Play();
         }
         else
         {
@@ -113,7 +127,7 @@ public class NormalCutInGenerator : MonoBehaviour
             normalCutInCharacter.transform.localPosition = new Vector3(0, normalCutInCharacter.transform.localPosition.y, normalCutInCharacter.transform.localPosition.z);
         }
 
-        sequence.Restart();
+        normalCutInSequence.Restart();
         normalCutInFade = DOVirtual.DelayedCall(CUTIN_TIME, () =>
         {
             normalCutInObject.SetActive(false);

@@ -12,8 +12,8 @@ public class FieldController : MonoBehaviour
     //Prefabオブジェクトの親オブジェクトへの参照を保持する
     public Transform ParentObj;
 
-    //カード1枚目の初期位置
-    int posx_start = -190;
+    
+    int fieldCardStartPosition = -190;//カード1枚目の初期位置
 
     private const int SPACE_OF_CARD = 380;
     private const int NUMBER_OF_FIELD = 2;
@@ -39,7 +39,7 @@ public class FieldController : MonoBehaviour
     public void DrawDeck(int fieldNumber,int numberFromDeck)
     {
         fieldcards[fieldNumber].serialNumber = numberFromDeck;
-        int posx = posx_start + fieldNumber * SPACE_OF_CARD;
+        int posx = fieldCardStartPosition + fieldNumber * SPACE_OF_CARD;
         Destroy(fieldcards[fieldNumber].card);
         fieldcards[fieldNumber].card = Instantiate(fieldcard, ParentObj, false);
         fieldcards[fieldNumber].card.transform.localPosition = new Vector3(posx, 0, -1);
@@ -103,6 +103,7 @@ public class FieldController : MonoBehaviour
 
     }
 
+    //カードの画像をResourceから取得し更新する。
     public void CardImageUpdate(int fieldNumber, int serialNumber)
     {
         fieldcards[fieldNumber].cardImage = fieldcards[fieldNumber].card.GetComponent<Image>();
@@ -126,7 +127,6 @@ public class FieldController : MonoBehaviour
                 return 1;
             }
         }
-        Debug.Log(@$"お手付きです。");
         return 0;
     }
 
@@ -146,9 +146,15 @@ public class FieldController : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// カードを置く位置を決定し、手札オブジェクトを場札まで移動させるように見せる。その後オブジェクトを削除する。
+    /// </summary>
+    /// <param name="fieldNumber">場札の左右</param>
+    /// <param name="handCard">移動させてくる手札オブジェクト</param>
+    /// <returns></returns>
     public IEnumerator AnimatePutCardField(int fieldNumber, GameObject handCard)
     {
-        int posx = posx_start + fieldNumber * SPACE_OF_CARD;
+        int posx = fieldCardStartPosition + fieldNumber * SPACE_OF_CARD;
         handCard.transform.SetParent(ParentObj);
         handCard.transform.DOLocalMove(new Vector3(posx, 0, 0), 0.1f);
         yield return new WaitForSeconds(0.2f);

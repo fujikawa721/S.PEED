@@ -7,7 +7,7 @@ public class EnemyUI : MonoBehaviour
     [SerializeField] GameController gameController;
     [SerializeField] Player enemy;
     
-    public const float ACTION_SPEED = 2.0f;
+    public const float ACTION_SPEED = 2.5f;
 
 
     /// <summary>

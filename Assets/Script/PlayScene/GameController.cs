@@ -16,6 +16,7 @@ public class GameController : MonoBehaviour
     [SerializeField] ResultDisplay resultDisplay;
     [SerializeField] private LoadingManager loadingManager;
     [SerializeField] private SoundManager soundManager;
+    [SerializeField] public CountdownTimer countdownTimer;
 
     [SerializeField] PlayerHandController playerHandController;
     [SerializeField] PlayerHandController enemyHandController;
@@ -29,8 +30,9 @@ public class GameController : MonoBehaviour
     public bool canPlayNow;
     public bool endGameFlg;
 
-    private const float READY_TIME = 3.0f;
-    private const float MESSAGE_DISPTIME_MIN = 0.5f;
+    private const int GAME_TIMELIMIT = 99;//ゲームの制限時間
+    private const float READY_TIME = 3.0f;//試合開始するまでの待ち時間
+    private const float MESSAGE_DISPTIME_MIN = 0.5f;//メッセージが表示される最小時間
 
 
     void Start()
@@ -38,7 +40,8 @@ public class GameController : MonoBehaviour
         StartCoroutine(StartGame());
     }
 
-    void Update()
+    //0.5秒ごとに実行する。
+    void FixedUpdate()
     {
         StartCoroutine(JudgePlaying());
     }
@@ -50,11 +53,14 @@ public class GameController : MonoBehaviour
     public IEnumerator StartGame()
     {
         soundManager.PlayBgmBattle();
+        countdownTimer.SetTimer(GAME_TIMELIMIT, LimitTimer);
         yield return StartCoroutine(LoadGame());
         yield return StartCoroutine(loadingManager.EndLoad());
+
         gameMessage.SetActive(true);
         gameMessageText.text = @$"READY...";
         
+        //手札生成処理
         StartCoroutine(ReadyPlayer());
         StartCoroutine(ReadyEnemy());
         yield return new WaitForSeconds(READY_TIME);
@@ -62,10 +68,12 @@ public class GameController : MonoBehaviour
         gameMessageText.text = @$"START!!";
         yield return new WaitForSeconds(MESSAGE_DISPTIME_MIN);
 
+        //場札生成処理
         StartCoroutine(deck.MakeField(0));
         StartCoroutine(enemyDeck.MakeField(1));
         soundManager.PlaySpeed();
         canPlayNow = true;
+        StartCoroutine(countdownTimer.CountDown());
         noactionCurtain.SetActive(false);
         gameMessage.SetActive(false);
         StartCoroutine(enemyUI.ActionEnemy());
@@ -103,7 +111,7 @@ public class GameController : MonoBehaviour
     /// </summary>
     private IEnumerator JudgePlaying()
     {
-
+        Debug.Log("ジャッジ処理");
         if (canPlayNow == true)
         {
             JudgeBothPlayerHp();
@@ -125,6 +133,7 @@ public class GameController : MonoBehaviour
 
             if (canPlayerAction == false && canEnemyAction == false)
             {
+                Debug.Log("スピード処理");
                 canPlayNow = false;
                 yield return StartCoroutine(Speed());
             }
@@ -144,6 +153,7 @@ public class GameController : MonoBehaviour
     /// </summary>
     public IEnumerator Speed()
     {
+        Debug.Log("スピード");
         yield return new WaitForSeconds(1.0f);
         soundManager.PlayWhistle();
         PauseGamePlaying();
@@ -166,7 +176,8 @@ public class GameController : MonoBehaviour
         gameMessage.SetActive(false);
         gameMessageText.text = @$"";
         ReStartGamePlaying();
-        player.CheckTriggerSkill();
+        player.CheckSpeedTriggerSkill();
+        enemyPlayer.CheckSpeedTriggerSkill();
         yield return null;
     }
 
@@ -177,14 +188,8 @@ public class GameController : MonoBehaviour
     {
         if(player.nowHp <= 0 || enemyPlayer.nowHp <= 0)
         {
-            canPlayNow = false;
-            endGameFlg = true;
-            noactionCurtain.SetActive(true);
-            gameMessage.SetActive(true);
-            gameMessageText.text = @$"GAME SET!!";
-            soundManager.PlayWhistle();
-
-            if(player.nowHp <= 0)
+            EndGame();
+            if (player.nowHp <= 0)
             {
                 string winner = "2P PLAYER";
                 StartCoroutine(resultDisplay.Ready(enemyPlayer,winner));
@@ -197,13 +202,40 @@ public class GameController : MonoBehaviour
         }
     }
 
+    //制限時間を過ぎたときの処理。HPが高いほうが勝者になる。
+    public void LimitTimer()
+    {
+        EndGame();
+        if (player.nowHp >= enemyPlayer.nowHp)
+        {
+            string winner = "1P PLAYER";
+            StartCoroutine(resultDisplay.Ready(player, winner)); 
+        }
+        else if (player.nowHp < enemyPlayer.nowHp)
+        {
+            string winner = "2P PLAYER";
+            StartCoroutine(resultDisplay.Ready(enemyPlayer, winner));
+        }
+    }
+
     private IEnumerator LoadGame()
     {
         yield return StartCoroutine(PassCharacterData());
         yield return StartCoroutine(player.ReadyGame());
         yield return StartCoroutine(enemyPlayer.ReadyGame());
-        
+    }
 
+    /// <summary>
+    /// ゲーム終了時にリザルト画面を表示させる処理。
+    /// </summary>
+    private void EndGame()
+    {
+        canPlayNow = false;
+        endGameFlg = true;
+        noactionCurtain.SetActive(true);
+        gameMessage.SetActive(true);
+        gameMessageText.text = @$"GAME SET!!";
+        soundManager.PlayWhistle();
     }
 
     /// <summary>

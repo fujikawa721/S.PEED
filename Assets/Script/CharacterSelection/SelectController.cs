@@ -31,7 +31,6 @@ public class SelectController : MonoBehaviour
         backButton.SetAction(ClickBackButton);
         okButton.SetAction(ClickOKButton);
 
-
         StartCoroutine(loadingManager.EndLoad());
         soundManager.PlayBgmCharacterSelection();
     }
@@ -43,6 +42,7 @@ public class SelectController : MonoBehaviour
     /// <returns></returns>
     public IEnumerator PassCharacterData(CharacterData characterData)
     {
+        soundManager.SetCharacterVoice(characterData);
         soundManager.PlayCursor();
         switch (selectionStatus)
         {
@@ -74,10 +74,12 @@ public class SelectController : MonoBehaviour
         switch (selectionStatus)
         {
             case 1:
+                soundManager.PlayCVGameStart();
                 playerCharacterData = characterData;
                 selectionStatus = 2;
                 break;
             case 2:
+                soundManager.PlayCVGameStart();
                 enemyCharacterData = characterData;
                 selectionStatus = 3;
                 readyPanel.SetActive(true);

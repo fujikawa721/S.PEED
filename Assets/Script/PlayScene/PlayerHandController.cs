@@ -108,7 +108,7 @@ public class PlayerHandController : MonoBehaviour
             {
                 stuckChecker = 0;
                 i = 0;
-                break;
+                return true;
             }
             else
             {

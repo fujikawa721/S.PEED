@@ -21,4 +21,10 @@ public class CharacterData : ScriptableObject
     public Sprite faceImage;
     public Sprite normalCutInImage;
     public Sprite specialCutInImage;
+
+    public AudioClip voiceGameStart;
+    public AudioClip voiceElementSkill;
+    public AudioClip voicePassivSkill;
+    public AudioClip voiceSP;
+
 }

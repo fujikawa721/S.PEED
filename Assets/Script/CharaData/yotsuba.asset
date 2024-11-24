@@ -15,13 +15,17 @@ MonoBehaviour:
   characterName: "\u30E8\u30C4\u30D0"
   characterId: 3
   maxHp: 1000
-  baseDamage: 20
+  baseDamage: 30
   maxSpPoint: 3
   elementMark: C
   characterType: "\u30C6\u30AF\u30CB\u30C3\u30AF\u30BF\u30A4\u30D7"
   spName: "\u604B\u84EE\u811A"
-  spInfo: "\u767A\u52D5\u6642\u306E\u30B3\u30F3\u30DC\u6570\u5FDC\u3058\u3066\u5927\u30C0\u30E1\u30FC\u30B8"
+  spInfo: "\u767A\u52D5\u6642\u306E\u30B3\u30F3\u30DC\u6570\u306B\u5FDC\u3058\u3066\u5927\u30C0\u30E1\u30FC\u30B8"
   characterImage: {fileID: 21300000, guid: e763f0caadfa30f4281bd5bea7460004, type: 3}
   faceImage: {fileID: 21300000, guid: 435d2871612f33d41870567f47563219, type: 3}
   normalCutInImage: {fileID: 21300000, guid: f6fd036a0935549449e25f21877f00e6, type: 3}
   specialCutInImage: {fileID: 21300000, guid: 275ecb8b0e7582b4cadd64d76b607314, type: 3}
+  voiceGameStart: {fileID: 8300000, guid: dc0721eb7e9b0634a8b3ecd2db398a02, type: 3}
+  voiceElementSkill: {fileID: 8300000, guid: 2a2cc538be5393042b0ffb28eb2a623d, type: 3}
+  voicePassivSkill: {fileID: 8300000, guid: b7553e56aa81a1f4aa5727503994b0b1, type: 3}
+  voiceSP: {fileID: 8300000, guid: a01a27650ca1af24eb3ed23bfb7c9c59, type: 3}

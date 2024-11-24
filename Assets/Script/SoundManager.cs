@@ -9,6 +9,7 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private AudioSource cardSE;//ドローなどのカード関連SE
     [SerializeField] private AudioSource playerSE;//ステータスアップなどのSE
     [SerializeField] private AudioSource cutInSE;//カットインのSE
+    [SerializeField] private AudioSource voiceSE;//キャラクターボイスのSE
 
     public AudioClip bgmCharacterSelection;
     public AudioClip bgmBattle;
@@ -24,19 +25,23 @@ public class SoundManager : MonoBehaviour
     public AudioClip voiceSpee;
     public AudioClip voiceDo;
 
-    public AudioClip deckMax;
     public AudioClip draw;
-
 
     public AudioClip spPointGet;
     public AudioClip spgaugeMax;
     public AudioClip combo;
+    public AudioClip deckMax;
 
     public AudioClip doSp;
     public AudioClip sword;
     public AudioClip recoverHp;
     public AudioClip powerUp;
     public AudioClip bigHit;
+
+    public AudioClip cvGameStart;
+    public AudioClip cvElementSkill;
+    public AudioClip cvPassivSkill;
+    public AudioClip cvSP;
 
     //★★★★★★★★★BGM★★★★★★★★★
     public void PlayBgmBattle()
@@ -93,19 +98,6 @@ public class SoundManager : MonoBehaviour
         systemSE.clip = whistle;
         systemSE.Play();
     }
-
-    public void PlayVoiceSPEE()
-    {
-        systemSE.clip = voiceSpee;
-        systemSE.Play();
-    }
-
-    public void PlayVoiceDO()
-    {
-        systemSE.clip = voiceDo;
-        systemSE.Play();
-    }
-
 
 
     //★★★★★★★★★カードSE★★★★★★★★★
@@ -180,4 +172,48 @@ public class SoundManager : MonoBehaviour
         cutInSE.Play();
     }
 
+    //★★★★★★★★★ボイスSE★★★★★★★★★
+    public void SetCharacterVoice(CharacterData characterData)
+    {
+        cvGameStart = characterData.voiceGameStart;
+        cvElementSkill= characterData.voiceElementSkill;
+        cvPassivSkill = characterData.voicePassivSkill;
+        cvSP = characterData.voiceSP;
+    }
+
+    public void PlayCVGameStart()
+    {
+        voiceSE.clip = cvGameStart;
+        voiceSE.Play();
+    }
+
+    public void PlayCVElementSkill()
+    {
+        voiceSE.clip = cvElementSkill;
+        voiceSE.Play();
+    }
+
+    public void PlayCVPassivSkill()
+    {
+        voiceSE.clip = cvPassivSkill;
+        voiceSE.Play();
+    }
+
+    public void PlayCVSP()
+    {
+        voiceSE.clip = cvSP;
+        voiceSE.Play();
+    }
+
+    public void PlayVoiceSPEE()
+    {
+        voiceSE.clip = voiceSpee;
+        voiceSE.Play();
+    }
+
+    public void PlayVoiceDO()
+    {
+        voiceSE.clip = voiceDo;
+        voiceSE.Play();
+    }
 }
