@@ -17,6 +17,11 @@ public class HPGauge : MonoBehaviour
     private float nowHpGauge = 1f;
     private Tween shakeTween;
 
+    /// <summary>
+    /// 攻撃を受けたとき水色のゲージを先に減らし、【0.5秒後】に赤色のゲージが追従する処理。
+    /// 同時に実行されたときに意図しない位置でゲージが停止するのでtweenで管理する。
+    /// </summary>
+    /// <param name="value"></param>
     public void SetGauge(float value)
     {
 
@@ -25,10 +30,8 @@ public class HPGauge : MonoBehaviour
                 burnImage.DOFillAmount(value, DURATION / 2f).SetDelay(0.5f);
             });
         if (shakeTween == null) {
-            Debug.Log("shakeTweenはnull");
             shakeTween = transform.DOShakePosition(DURATION / 2f,STRENGTH, VIBRATE).SetAutoKill(false).Pause();
         }
-        Debug.Log("shakeTweenはnullじゃない");
         shakeTween.Restart();
         nowHpGauge = value;
     }

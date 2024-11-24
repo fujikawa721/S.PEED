@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6b88ff1b4a706a40a8f64f759cccbe0, type: 3}
+  m_Name: giant
+  m_EditorClassIdentifier: 
+  characterName: "\u30B8\u30E3\u30A4\u30A2\u30F3\u30C8"
+  characterId: 4
+  maxHp: 1000
+  baseDamage: 10
+  maxSpPoint: 3
+  elementMark: S
+  characterType: "\u30D0\u30E9\u30F3\u30B9\u30BF\u30A4\u30D7"
+  spName: "\u5730\u6BBB\u5171\u9CF4"
+  spInfo: "\u57FA\u790E\u653B\u6483\u529B\u304C\u30A2\u30C3\u30D7\u3059\u308B"
+  characterImage: {fileID: 21300000, guid: a668ad08ca2f45243a07b4379f0d275b, type: 3}
+  faceImage: {fileID: 21300000, guid: f8ae3ea966b66c644995b6e95f028c49, type: 3}
+  normalCutInImage: {fileID: 21300000, guid: e122cdcea5139d841a4aa79a63a91e95, type: 3}
+  specialCutInImage: {fileID: 21300000, guid: 6866533b3e0ca844eb3bcf2c47183222, type: 3}

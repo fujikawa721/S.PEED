@@ -14,6 +14,10 @@ public class PlayerHandController : MonoBehaviour
     public delegate void CardPut(int handNumber);
     private CardPut cardPutCallBack;
 
+    //お手付きした場合のコールバック処理
+    public delegate void PutCardMiss();
+    private PutCardMiss putCardMissCallBack;
+
     //トランプのプレハブ
     public GameObject cardPrefab;
     private Image cardImage;
@@ -22,16 +26,13 @@ public class PlayerHandController : MonoBehaviour
     
     public Transform ParentObj;
 
-    private int drawPositionDefault = -620;
-    
-    //プレイヤーの手札は【5枚】
-    private const int NUMBER_OF_HAND = 5;
+    private int drawPositionDefault = -620;//手札を配置する初期位置
 
-    //【手札のカード同士の間隔は横【310】px】
-    private const int SPACE_OF_CARD = 310;
+    private const int NUMBER_OF_HAND = 5;//プレイヤーの手札は【5枚】
+
+    private const int SPACE_OF_CARD = 310;//手札のカード同士の間隔は横【310】px
     
-    //ドローにかかる速度は【0.1f】
-    private const float SPEED_DRAWHAND = 0.1f;
+    private const float SPEED_DRAWHAND = 0.1f;//ドローにかかる速度は【0.1f】
 
     public struct CardData
     {
@@ -47,9 +48,10 @@ public class PlayerHandController : MonoBehaviour
 
     
 
-    public IEnumerator ReadyGame(CardPut putCardAction)
+    public IEnumerator ReadyGame(CardPut putCardAction, PutCardMiss missCardEffect)
     {
         cardPutCallBack = putCardAction;
+        putCardMissCallBack = missCardEffect;
         ClearHand();
         yield return null;
 
@@ -90,7 +92,7 @@ public class PlayerHandController : MonoBehaviour
         }
         else
         {
-            //お手付きの場合コンボをリセットする処理
+            putCardMissCallBack();
         }
     }
 
@@ -105,6 +107,7 @@ public class PlayerHandController : MonoBehaviour
             if(correct_judge == 1)
             {
                 stuckChecker = 0;
+                i = 0;
                 break;
             }
             else

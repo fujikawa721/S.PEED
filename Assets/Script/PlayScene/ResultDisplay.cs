@@ -84,7 +84,10 @@ public class ResultDisplay : MonoBehaviour
     }
 
 
-
+    /// <summary>
+    /// リザルト画面を表示させるアニメーション
+    /// </summary>
+    /// <returns></returns>
     public IEnumerator AnimateResultDisplay()
     {
         Debug.Log("アニメーション開始");

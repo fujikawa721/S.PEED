@@ -6,15 +6,15 @@ using UnityEngine.SceneManagement;
 public class SelectController : MonoBehaviour
 {
     //PlaySceneのGameControllerから呼び出される。
-    public static CharacterData player_character_data;
-    public static CharacterData enemy_character_data;
+    public static CharacterData playerCharacterData;
+    public static CharacterData enemyCharacterData;
 
     [SerializeField] private LoadingManager loadingManager;
     [SerializeField] private SoundManager soundManager;
 
     [SerializeField] CharacterInfo playerCharacter;
     [SerializeField] CharacterInfo enemyCharacter;
-    [SerializeField] GameObject load_display;
+    [SerializeField] GameObject loadDisplay;
     [SerializeField] GameObject readyPanel;
     [SerializeField] MenuButton backButton;
     [SerializeField] MenuButton okButton;
@@ -22,11 +22,11 @@ public class SelectController : MonoBehaviour
     [SerializeField] private CharacterData nullCharacterData;
 
     private const float LOAD_TIME = 3.0f;
-    private int selection_status = 1;
+    private int selectionStatus = 1;
 
     void Start()
     {
-        load_display.SetActive(false);
+        loadDisplay.SetActive(false);
         readyPanel.SetActive(false);
         backButton.SetAction(ClickBackButton);
         okButton.SetAction(ClickOKButton);
@@ -39,23 +39,23 @@ public class SelectController : MonoBehaviour
     /// <summary>
     /// キャラクターの顔画像にカーソルを合わせたときにキャラクターの情報を表示させる。
     /// </summary>
-    /// <param name="chara_data">キャラフェイスにアタッチされてるキャラクターデータ</param>
+    /// <param name="characterData">キャラフェイスにアタッチされてるキャラクターデータ</param>
     /// <returns></returns>
-    public IEnumerator pass_character_data(CharacterData chara_data)
+    public IEnumerator PassCharacterData(CharacterData characterData)
     {
         soundManager.PlayCursor();
-        switch (selection_status)
+        switch (selectionStatus)
         {
             case 1:
-                playerCharacter.receive_data(chara_data);
+                playerCharacter.ReceiveData(characterData);
                 break;
             case 2:
-                enemyCharacter.receive_data(chara_data);
+                enemyCharacter.ReceiveData(characterData);
                 break;
             case 3:
                 break;
             default:
-                Debug.Log(@$"selection_statusが正しくありません。");
+                Debug.Log(@$"selectionStatusが正しくありません。");
                 break;
         }
         yield return null;
@@ -67,25 +67,25 @@ public class SelectController : MonoBehaviour
     /// </summary>
     /// <param name="chara_data"></param>
     /// <returns></returns>
-    public IEnumerator select_character(CharacterData chara_data)
+    public IEnumerator SelectCharacter(CharacterData characterData)
     {
-        StartCoroutine(pass_character_data(chara_data));
+        StartCoroutine(PassCharacterData(characterData));
         soundManager.PlaySelect();
-        switch (selection_status)
+        switch (selectionStatus)
         {
             case 1:
-                player_character_data = chara_data;
-                selection_status = 2;
+                playerCharacterData = characterData;
+                selectionStatus = 2;
                 break;
             case 2:
-                enemy_character_data = chara_data;
-                selection_status = 3;
+                enemyCharacterData = characterData;
+                selectionStatus = 3;
                 readyPanel.SetActive(true);
                 break;
             case 3:
                 break;
             default:
-                Debug.Log(@$"selection_statusが正しくありません。");
+                Debug.Log(@$"selectionStatusが正しくありません。");
                 break;
         }
         yield return null;
@@ -106,17 +106,17 @@ public class SelectController : MonoBehaviour
     public IEnumerator BackSelectionStatus()
     {
         soundManager.PlayBack();
-        switch (selection_status)
+        switch (selectionStatus)
         {
             case 1:
                 break;
             case 2:
-                selection_status = 1;
-                playerCharacter.receive_data(nullCharacterData);
+                selectionStatus = 1;
+                playerCharacter.ReceiveData(nullCharacterData);
                 break;
             case 3:
-                selection_status = 2;
-                enemyCharacter.receive_data(nullCharacterData);
+                selectionStatus = 2;
+                enemyCharacter.ReceiveData(nullCharacterData);
                 readyPanel.SetActive(false);
                 break;
             default:
@@ -129,7 +129,7 @@ public class SelectController : MonoBehaviour
     public IEnumerator GoGameplayScene()
     {
         soundManager.PlayGameready();
-        load_display.SetActive(true);
+        loadDisplay.SetActive(true);
         yield return new WaitForSeconds(LOAD_TIME);
         SceneManager.LoadScene("Play");
         yield return null;

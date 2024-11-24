@@ -30,9 +30,13 @@ public class SoundManager : MonoBehaviour
 
     public AudioClip spPointGet;
     public AudioClip spgaugeMax;
+    public AudioClip combo;
+
     public AudioClip doSp;
     public AudioClip sword;
     public AudioClip recoverHp;
+    public AudioClip powerUp;
+    public AudioClip bigHit;
 
     //★★★★★★★★★BGM★★★★★★★★★
     public void PlayBgmBattle()
@@ -137,6 +141,43 @@ public class SoundManager : MonoBehaviour
     {
         playerSE.clip = deckMax;
         playerSE.Play();
+    }
+
+    public void PlayCombo()
+    {
+        playerSE.clip = combo;
+        playerSE.Play();
+    }
+
+    //★★★★★★★★★カットインSE★★★★★★★★★
+    public void PlaySword()
+    {
+        cutInSE.clip = sword;
+        cutInSE.Play();
+    }
+
+    public void PlayRecover()
+    {
+        cutInSE.clip = recoverHp;
+        cutInSE.Play();
+    }
+
+    public void PlayPowerUp()
+    {
+        cutInSE.clip = powerUp;
+        cutInSE.Play();
+    }
+
+    public void PlayBigHit()
+    {
+        cutInSE.clip = bigHit;
+        cutInSE.Play();
+    }
+
+    public void PlayEventCutIn()
+    {
+        cutInSE.clip = spPointGet;
+        cutInSE.Play();
     }
 
 }

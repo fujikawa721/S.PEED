@@ -17,7 +17,7 @@ public class CharacterInfo : MonoBehaviour
     //キャラクターの立ち絵読み込み
     [SerializeField] public GameObject characterObject;
     [SerializeField] private Image characterImage;
-    [SerializeField] public Sprite null_img;
+    [SerializeField] public Sprite nullImg;
 
     //属性マークの読み込み
     [SerializeField] public GameObject markObject;
@@ -28,7 +28,10 @@ public class CharacterInfo : MonoBehaviour
     [SerializeField] public Sprite markHeart;
 
 
-    public void receive_data(CharacterData characterData)
+    /// <summary>
+    /// キャラクターボタンからキャラクターデータを受け取り各種データを設定する。
+    /// </summary>
+    public void ReceiveData(CharacterData characterData)
     {
         characterNameText.text = @$"{characterData.characterName}";
         characterTypeText.text = @$"{characterData.characterType}";
@@ -40,6 +43,9 @@ public class CharacterInfo : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// キャラクターの属性記号を確認し表示するマークを設定する。
+    /// </summary>
     public void CheckElementMark(string elementMark)
     {
         markImage = markObject.GetComponent<Image>();
@@ -60,8 +66,8 @@ public class CharacterInfo : MonoBehaviour
                 markImage.sprite = markSpade;
                 break;
             default:
-                characterImage.sprite = null_img;
-                markImage.sprite = null_img;
+                characterImage.sprite = nullImg;
+                markImage.sprite = nullImg;
                 break;
 
         }

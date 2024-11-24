@@ -74,9 +74,12 @@ MonoBehaviour:
   draw: {fileID: 8300000, guid: cee1e577cdc89114ca542fc0fb4da7cb, type: 3}
   spPointGet: {fileID: 8300000, guid: 61bd39262c5fba64aaeec950a8f46823, type: 3}
   spgaugeMax: {fileID: 8300000, guid: d2e58adffc5ddb941a479387b2f29549, type: 3}
+  combo: {fileID: 8300000, guid: 06a927267e8af0b4a85f86a1979302db, type: 3}
   doSp: {fileID: 8300000, guid: b7bf812206266ff45ba22fb660acaccf, type: 3}
   sword: {fileID: 8300000, guid: 5c382e584fb2e424e825958755446538, type: 3}
   recoverHp: {fileID: 8300000, guid: d2e2373b24481e24a936a38772593719, type: 3}
+  powerUp: {fileID: 8300000, guid: 1edd01bd9f0a5444a9cd68925e1abc44, type: 3}
+  bigHit: {fileID: 8300000, guid: 42da9c52d9ceec248b49160288d30955, type: 3}
 --- !u!82 &6814339387189037453
 AudioSource:
   m_ObjectHideFlags: 0

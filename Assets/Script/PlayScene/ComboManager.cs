@@ -14,15 +14,17 @@ public class ComboManager : MonoBehaviour
     
     
     [SerializeField] public GameController gameController;
+    [SerializeField] public SoundManager soundManager;
+
 
     [SerializeField] GameObject comboTextObject;
     [SerializeField] TextMeshProUGUI comboText;
     [SerializeField] private Image comboTimerImage;
 
-    private int combo = 0;
+    public int combo = 0;
 
-    //【3秒以内】に攻撃を行うとコンボが成立する。※例外のキャラクターも存在する。
-    private int comboTime = 3;
+    //【5秒以内】に攻撃を行うとコンボが成立する。※例外のキャラクターも存在する。
+    private int comboTime = 5;
     private int timerCount;
 
     //タイマーのアニメーションの動作速度は【0.5f】秒
@@ -44,10 +46,16 @@ public class ComboManager : MonoBehaviour
         if(combo > 1)
         {
             comboText.text = @$"{combo}コンボ!";
+            soundManager.PlayCombo();
             AnimateComboText();
         }
 
         return combo;
+    }
+
+    public void ResetCombo()
+    {
+        combo = 0;
     }
 
     /// <summary>

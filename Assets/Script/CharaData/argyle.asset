@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterName: "\u30A2\u30FC\u30AC\u30A4\u30EB"
   characterId: 1
-  maxHp: 100
-  baseDamage: 2
+  maxHp: 1000
+  baseDamage: 20
   maxSpPoint: 3
   elementMark: D
   characterType: "\u653B\u6483\u30BF\u30A4\u30D7"

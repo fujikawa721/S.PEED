@@ -12,7 +12,6 @@ public class SPGauge : MonoBehaviour
 
     private const float DURATION = 0.5f;//ƒQ[ƒW‚ªi‚ŞŠÔ
     private const float STRENGTH = 20f;//—h‚ê‚Ì‹­‚³
-    private int VIBRATE = 100;//—h‚ê‹ï‡
 
     private float nowSpGauge = 0f;
 

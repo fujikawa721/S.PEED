@@ -8,6 +8,7 @@ using TMPro;
 
 public class StartMenuController : MonoBehaviour
 {
+    [SerializeField] private SoundManager soundManager;
     [SerializeField] private LoadingManager loadingManager;
     [SerializeField] private Image background;
     [SerializeField] private GameObject titleLogo;
@@ -15,12 +16,13 @@ public class StartMenuController : MonoBehaviour
     [SerializeField] private GameObject vsCpuButton;
     [SerializeField] private MenuButton vsCpuButtonScript;
 
-    private const float LOADING_TIME = 1.0f;//Å’áy1•bŠÔzƒ[ƒh‰æ–Ê‚ª‘±‚­
     private const float SLIDE_SPEED = 0.5f;//ƒ{ƒ^ƒ“‚Íy0.5z•b‚©‚¯‚ÄƒXƒ‰ƒCƒh‚·‚éB
+    private const float LOAD_TIME = 1.0f;//‰æ–Ê‘JˆÚ‚·‚é‚Ü‚Å‚ÉÅ’á‚Å‚ày1•bŠÔz‘Ò‚Â
 
     void Start()
     {
         StartCoroutine(Ready());
+        soundManager.PlayBgmResult();
     }
 
     public IEnumerator Ready()
@@ -28,7 +30,7 @@ public class StartMenuController : MonoBehaviour
         Debug.Log("ƒŒƒfƒBŠJn");
         vsCpuButton.SetActive(false);
         vsCpuButtonScript.SetAction(ClickButtonVSCpu);
-        yield return new WaitForSeconds(LOADING_TIME);
+        yield return new WaitForSeconds(LOAD_TIME);
         yield return StartCoroutine(loadingManager.EndLoad());
         StartCoroutine(AnimateRightSlideObject(vsCpuButton));
     }
@@ -41,6 +43,7 @@ public class StartMenuController : MonoBehaviour
     public IEnumerator MoveSelectionCharacter()
     {
         yield return StartCoroutine(loadingManager.StartLoad());
+        yield return new WaitForSeconds(LOAD_TIME);
         SceneManager.LoadScene("CharacterSelection");
     }
 

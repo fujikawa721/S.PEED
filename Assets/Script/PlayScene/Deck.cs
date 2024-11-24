@@ -14,8 +14,8 @@ public class Deck : MonoBehaviour, IPointerClickHandler
     [SerializeField] Player player;
     [SerializeField] private Image deckImg;
 
-    //RD‚ÌÅ‘å–‡”‚Íy26–‡z
-    private const int NUMBER_OF_DECK = 26;
+    //RD‚ÌÅ‘å–‡”‚Íy52–‡z
+    private const int NUMBER_OF_DECK = 52;
     
     //RD‚©‚çêD‚ÉƒJ[ƒh‚ğ’u‚¢‚½Û‚Éy0.2fzŒã‘±ˆ—‚ğ‘Ò‚ÂB
     private const float SPEED_DRAWFIELD = 0.2f;

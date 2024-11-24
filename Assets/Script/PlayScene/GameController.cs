@@ -29,7 +29,8 @@ public class GameController : MonoBehaviour
     public bool canPlayNow;
     public bool endGameFlg;
 
-
+    private const float READY_TIME = 3.0f;
+    private const float MESSAGE_DISPTIME_MIN = 0.5f;
 
 
     void Start()
@@ -42,7 +43,10 @@ public class GameController : MonoBehaviour
         StartCoroutine(JudgePlaying());
     }
 
-
+    /// <summary>
+    /// ゲーム開始時に実行される処理。山札生成、手札生成、ゲーム開始を支持する。
+    /// </summary>
+    /// <returns></returns>
     public IEnumerator StartGame()
     {
         soundManager.PlayBgmBattle();
@@ -53,10 +57,10 @@ public class GameController : MonoBehaviour
         
         StartCoroutine(ReadyPlayer());
         StartCoroutine(ReadyEnemy());
-        yield return new WaitForSeconds(3.0f);
+        yield return new WaitForSeconds(READY_TIME);
 
         gameMessageText.text = @$"START!!";
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(MESSAGE_DISPTIME_MIN);
 
         StartCoroutine(deck.MakeField(0));
         StartCoroutine(enemyDeck.MakeField(1));
@@ -99,11 +103,12 @@ public class GameController : MonoBehaviour
     /// </summary>
     private IEnumerator JudgePlaying()
     {
+
         if (canPlayNow == true)
         {
             JudgeBothPlayerHp();
-            CheckPlayerCanAction();
-            
+            yield return StartCoroutine(CheckPlayerCanAction());
+
             if (canPlayerAction == false)
             {
                 playerActionText.text = @$"出せるカードがありません。";
@@ -124,13 +129,13 @@ public class GameController : MonoBehaviour
                 yield return StartCoroutine(Speed());
             }
         }
-        yield return null;
     }
 
-    private void CheckPlayerCanAction()
+    private IEnumerator CheckPlayerCanAction()
     {
         canPlayerAction = playerHandController.CheckCanAction();
         canEnemyAction = enemyHandController.CheckCanAction();
+        yield return null;
     }
 
     /// <summary>
@@ -153,7 +158,7 @@ public class GameController : MonoBehaviour
 
         gameMessageText.text = @$"スピード!";
         soundManager.PlayVoiceDO();
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(MESSAGE_DISPTIME_MIN);
         
         soundManager.PlaySpeed();
         StartCoroutine(deck.MakeField(0));
@@ -161,7 +166,7 @@ public class GameController : MonoBehaviour
         gameMessage.SetActive(false);
         gameMessageText.text = @$"";
         ReStartGamePlaying();
-
+        player.CheckTriggerSkill();
         yield return null;
     }
 
@@ -207,10 +212,10 @@ public class GameController : MonoBehaviour
     /// </summary>
     private IEnumerator PassCharacterData()
     {
-        if (SelectController.player_character_data != null && SelectController.enemy_character_data != null)
+        if (SelectController.playerCharacterData != null && SelectController.enemyCharacterData != null)
         {
-            player.characterData = SelectController.player_character_data;
-            enemyPlayer.characterData = SelectController.enemy_character_data;
+            player.characterData = SelectController.playerCharacterData;
+            enemyPlayer.characterData = SelectController.enemyCharacterData;
         }
         yield return null;
     }

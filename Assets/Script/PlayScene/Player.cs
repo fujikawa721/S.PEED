@@ -7,6 +7,12 @@ using DG.Tweening;
 
 public class Player : MonoBehaviour
 {
+    /// -------------------------------------------------------------------------
+    /// Player.cs
+    /// 手札から場札に出した後のプレイヤーの動きを主に制御するクラス
+    /// 新規キャラクターを追加した場合、CheckCharacterID関数に記載を追加する。
+    /// -------------------------------------------------------------------------
+
     [SerializeField] private HPGauge hpGauge;
     [SerializeField] private SPGauge spGauge;
     [SerializeField] private Player enemyPlayer;
@@ -24,13 +30,12 @@ public class Player : MonoBehaviour
     [SerializeField] private Image faceImage;
 
     //プレイヤーのステータス関連
-    public int nowHp = 10;
+    public int nowHp;
     public int nowSpPoint = 0;
     private const int PLUS_SPPOINT = 1;
 
     //攻撃ダメージの計算に使用する変数
     public int combo = 0;
-    private float damageRatio = 1.0f;//攻撃倍率
     public float attackDamage;
 
     
@@ -41,9 +46,9 @@ public class Player : MonoBehaviour
 
     public IEnumerator ReadyGame()
     {
-        yield return (playerHandController.ReadyGame(PutCardAction));
+        yield return (playerHandController.ReadyGame(PutCardAction,PutCardMiss));
         yield return StartCoroutine(characterAction.Ready(characterAction.characterSkill, characterData,RecoverHp, PlusSpGauge));
-        CheckPlayerface();
+        CheckCharacterID();
         hpGauge.SetGauge(1f);
         spGauge.SetGauge(0f);
         yield return null;
@@ -62,6 +67,15 @@ public class Player : MonoBehaviour
         AttackEnemy();
     }
 
+    /// <summary>
+    /// お手付きした際に呼び出される処理。現在のコンボを0に戻す
+    /// </summary>
+    public void PutCardMiss()
+    {
+        characterAction.ResetCombo();
+        CheckTriggerSkill();
+    }
+
 
     /// <summary>
     /// 攻撃を与える処理。コンボが成立する猶予時間は基本は5秒。
@@ -75,6 +89,7 @@ public class Player : MonoBehaviour
     {
         nowHp = nowHp - damage;
         hpGauge.TakeDamage(damage, characterData.maxHp);
+        CheckTriggerSkill();
     }
 
     /// <summary>
@@ -89,6 +104,8 @@ public class Player : MonoBehaviour
 
         nowHp = nowHp + recoverHp;
         hpGauge.TakeDamage(-recoverHp, characterData.maxHp);
+        soundManager.PlayRecover();
+        CheckTriggerSkill();
     }
 
     /// <summary>
@@ -105,6 +122,7 @@ public class Player : MonoBehaviour
         }
         float plusSpPointRate = ((float)nowSpPoint / characterData.maxSpPoint);
         spGauge.PlusSpGauge(plusSpPointRate);
+        CheckTriggerSkill();
         JudgeCanDoSp();
     }
 
@@ -117,6 +135,7 @@ public class Player : MonoBehaviour
         {
             soundManager.PlaySPGaugeMax();
             canDoSpecial = true;
+            CheckTriggerSkill();
             deck.AnimateDeckFlash();
         }
         else
@@ -140,18 +159,25 @@ public class Player : MonoBehaviour
         JudgeCanDoSp();
         spGauge.PlusSpGauge(0f);
         deck.StopAnimate();
-        //audioSource.Play();
         gameController.ReStartGamePlaying();
+        CheckTriggerSkill();
         yield return null;
     }
 
+    public void CheckTriggerSkill()
+    {
+        StartCoroutine(characterAction.CheckTrigger());
+    }
+
     /// <summary>
-    /// ステータス部分のプレイヤー顔画像を判定する。
+    /// キャラクターIDを判別し顔画像・スキル内容などを決定する。
+    /// キャラクター追加の際にはここに記載を追加する。
     /// </summary>
-    private void CheckPlayerface()
+    private void CheckCharacterID()
     {
         faceImage = faceObject.GetComponent<Image>();
         faceImage.sprite = characterData.faceImage;
+        nowHp = characterData.maxHp;
         switch (characterData.characterId)
         {
             case 1:
@@ -159,6 +185,12 @@ public class Player : MonoBehaviour
                 break;
             case 2:
                 characterAction.characterSkill = new KokoroSkill();
+                break;
+            case 3:
+                characterAction.characterSkill = new YotsubaSkill();
+                break;
+            case 4:
+                characterAction.characterSkill = new GiantSkill();
                 break;
             default:
                 Debug.Log(@$"スペシャルIDにエラーがあります");
